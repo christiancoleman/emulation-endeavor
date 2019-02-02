@@ -32,6 +32,7 @@ unsigned char chip8_fontset[80] = {
 
 void initGraphics();
 void loadFontSet();
+void clearScreen();
 
 //////////////////////////////////////
 //implementations
@@ -52,4 +53,8 @@ void loadFontSet(){
 		memory[i] = chip8_fontset[i];
 	}
 	printf("Loaded font set...\n");
+}
+
+void clearScreen(){
+	printf("\tClearing the screen...\n");
 }

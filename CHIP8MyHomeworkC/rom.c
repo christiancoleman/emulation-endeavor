@@ -12,16 +12,9 @@ void loadRom(){
 	printf("################### LOADING ROM ######################\n");
 	printf("######################################################\n\n");
 
-	/*
-		After you have initialized the emulator, load the program into the memory (use fopen in binary mode)
-		and start filling the memory at location: 0x200 == 512.
-	*/
-
-	//https://www.tutorialspoint.com/c_standard_library/c_function_fopen.htm
-
 	FILE * fp;
 
-	fp = fopen("TETRIS", "rb"); // OPEN IN BINARY MODE
+	fp = fopen("TETRIS", "rb"); // b is binary mode
 
 	int sz = getSizeOfFile(fp);
 
@@ -35,7 +28,7 @@ void loadRom(){
 int getSizeOfFile(FILE* fp){
 	fseek(fp, 0L, SEEK_END);
 	int sz = ftell(fp);
-	fseek(fp, 0L, SEEK_SET);
+	fseek(fp, 0L, SEEK_SET); // return to the beginning
 	printf("Size: %i (0x%x)\n\n", sz, sz);
 	return sz;
 }

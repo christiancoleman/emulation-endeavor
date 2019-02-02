@@ -53,8 +53,8 @@ void initMemory(){
 	stack = calloc( ( 16 + 1 ), sizeof(unsigned char) );
 	SP = 0x0000;
 
-	I = 0x0000;
 	PC = 0x0200; // This is the entry point for all CHIP-8 roms
+	I = 0x0000;
 	V0 = 0x00;
 	V1 = 0x00;
 	V2 = 0x00;

@@ -9,12 +9,6 @@
 
 int main(){
 
-	printf("\n");
-	printf("%p\n", V0);
-	printf("%p\n", I); 
-	printf("%p\n", PC);
-	printf("^ should be zeroes\n\n");
-
 	// memory.c
 	initMemory();
 
