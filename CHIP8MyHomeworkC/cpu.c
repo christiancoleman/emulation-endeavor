@@ -19,10 +19,8 @@ void startEmulation(){
 
 	printf("\n");
 	printf("######################################################\n");
-	printf("################ STARTING EMULATION ##N###############\n");
+	printf("################ STARTING EMULATION ##################\n");
 	printf("######################################################\n\n");
-
-	PC = 0x200;
 
 	while(PC != 0x1000){ // TODO: while(stillReading or stillEmulating)
 		unsigned short opcode = getOpcode(1);
@@ -173,14 +171,8 @@ void startEmulation(){
 				//printf("Instruction not found: %x", opcode);
 				printf("");
 		}
+
 		PC += 0x1;
-		printf("0x%x: 0x%x\t", PC, memory[PC]);
-		PC += 0x1;
-		printf("0x%x: 0x%x\t", PC, memory[PC]);
-		PC += 0x1;
-		printf("0x%x: 0x%x\t", PC, memory[PC]);
-		PC += 0x1;
-		printf("0x%x: 0x%x\n", PC, memory[PC]);
 	}
 
 }

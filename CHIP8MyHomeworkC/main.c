@@ -24,17 +24,11 @@ int main(){
 	// rom.c
 	loadRom();
 
-	for(int i = 0x0; i < 4096; i++){
-		printf("0x%x: 0x%x \t", i, memory[i]);
-		i++;
-		printf("0x%x: 0x%x\t", i, memory[i]);
-		i++;
-		printf("0x%x: 0x%x\t", i, memory[i]);
-		i++;
-		printf("0x%x: 0x%x\n", i, memory[i]);
-	}
-
+	// cpu.c
 	startEmulation();
+
+	// memory.c
+	DEBUG_printMemory();
 
 	// http://www.multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/
 	/*

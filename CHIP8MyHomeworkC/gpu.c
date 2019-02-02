@@ -30,14 +30,19 @@ unsigned char chip8_fontset[80] = {
 // declarations
 //////////////////////////////////////
 
-void loadFontSet();
 void initGraphics();
+void loadFontSet();
 
 //////////////////////////////////////
 //implementations
 //////////////////////////////////////
 
 void initGraphics(){
+	printf("\n");
+	printf("######################################################\n");
+	printf("############### INITIALIZING GRAPHICS ################\n");
+	printf("######################################################\n\n");
+
 	loadFontSet();
 }
 
@@ -46,4 +51,5 @@ void loadFontSet(){
 	for(; i < 80; ++i) {
 		memory[i] = chip8_fontset[i];
 	}
+	printf("Loaded font set...\n");
 }
