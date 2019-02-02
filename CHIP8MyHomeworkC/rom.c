@@ -29,6 +29,6 @@ int getSizeOfFile(FILE* fp){
 	fseek(fp, 0L, SEEK_END);
 	int sz = ftell(fp);
 	fseek(fp, 0L, SEEK_SET); // return to the beginning
-	printf("Size: %i (0x%x)\n\n", sz, sz);
+	printf("Size: %i (0x%x)\n", sz, sz);
 	return sz;
 }
