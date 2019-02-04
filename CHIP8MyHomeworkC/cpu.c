@@ -14,6 +14,12 @@
 
 unsigned short getOpcode(int);
 void startEmulation();
+void DEBUG_dumpState();
+void pushAddressToStack();
+void popAddressFromStack();
+void call(unsigned short);
+void gotoAddr(unsigned short);
+void nextInstruction();
 
 unsigned short getOpcode(int index){
 	unsigned short result = 0x0000;
@@ -31,6 +37,9 @@ void startEmulation(){
 
 	while(PC != 0x1000) { // TODO: while(stillReading or stillEmulating)
 		unsigned short opcode = getOpcode(PC);
+		printf("#################################################\n");
+		printf("Location: %x\n", PC);
+		printf("Opcode: %x\n", opcode);
 
 		// Special zero case #1
 		// Clears the screen.
@@ -39,6 +48,7 @@ void startEmulation(){
 		if(opcode == 0x00E0) {
 			printf("Found 0x00E0 at: %x\n", PC);
 			clearScreen();
+			nextInstruction();
 		} 
 		
 		// Special zero case #2
@@ -47,6 +57,11 @@ void startEmulation(){
 		// return;
 		else if(opcode == 0x00EE) {
 			printf("Found 0x00EE at: %x\n", PC);
+			popAddressFromStack();
+			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			// We are NOT incrementing PC so this code won't work
+			// unless all function calls are implemented correctly
+			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		} 
 		
 		// Generic zero case catch
@@ -55,6 +70,8 @@ void startEmulation(){
 		// call NNN;
 		else if( (0x0000 <= opcode) && (opcode <= 0x0FFF) ){
 			printf("Found 0x0NNN at: %x with value of: %x\n", PC, opcode);
+			pushAddressToStack();
+			call(opcode); // go to NNN, since it begins with a zero we don't need any bitwise stuff to get the address
 		} 
 		
 		// All 0x1*** cases are the same
@@ -63,6 +80,7 @@ void startEmulation(){
 		// goto NNN;
 		else if( (0x1000 <= opcode) && (opcode <= 0x1FFF) ){
 			printf("Found 0x1NNN at: %x with value of: %x\n", PC, opcode);
+			gotoAddr(opcode - 0x1000);
 		} 
 		
 		// All 0x2*** cases are the same
@@ -71,6 +89,7 @@ void startEmulation(){
 		// *(0xNNN)()
 		else if( (0x2000 <= opcode) && (opcode <= 0x2FFF) ){
 			printf("Found 0x2NNN at: %x with value of: %x\n", PC, opcode);
+			gotoAddr(opcode - 0x2000);
 		}
 		
 		// All 0x3*** cases are the same
@@ -191,7 +210,9 @@ void startEmulation(){
 		// type: Memory
 		// I = NNN
 		else if( (0xA000 <= opcode) && (opcode <= 0xAFFF) ){
-			printf("Found 0xANNN at: %x with value of: %x\n", PC, opcode);
+			//printf("Found 0xANNN at: %x with value of: %x\n", PC, opcode);
+			I = opcode - 0xA000;
+			nextInstruction();
 		}
 
 		// All 0xB*** cases are the same
@@ -304,9 +325,63 @@ void startEmulation(){
 
 		else {
 			printf("\tInstruction not found at: %x with value of: %x\n", PC, opcode);
+			PC += 0x2;
 		}
 
-		PC += 0x2; // opcodes are 2 bytes long, so we read them in that increment
-	}
+		DEBUG_dumpState();
 
+	}
+}
+
+void DEBUG_dumpState(){
+	printf("SP: \t%x\n", SP);
+	printf("PC: \t%x\n:", PC);
+	printf("I: \t%x\n", I);
+	printf("V0: \t%x\n", V0);
+	printf("V1: \t%x\n", V1);
+	printf("V2: \t%x\n", V2);
+	printf("V3: \t%x\n", V3);
+	printf("V4: \t%x\n", V4);
+	printf("V5: \t%x\n", V5);
+	printf("V6: \t%x\n", V6);
+	printf("V7: \t%x\n", V7);
+	printf("V8: \t%x\n", V8);
+	printf("V9: \t%x\n", V9);
+	printf("VA: \t%x\n", VA);
+	printf("VB: \t%x\n", VB);
+	printf("VC: \t%x\n", VC);
+	printf("VD: \t%x\n", VD);
+	printf("VE: \t%x\n", VE);
+	printf("VF: \t%x\n", VF);
+	getchar();
+}
+
+void pushAddressToStack(){
+	// make room for new value on stack
+	SP += 0x2;
+
+	// store the address of the instruction after the call
+	*SP = PC + 0x2;
+}
+
+void popAddressFromStack(){
+	// pull return address from the stack
+	PC = *SP;
+
+	// popped return address means
+	// stack pointer needs to move to previous value
+	SP += 0x2;
+}
+
+void call(unsigned short addr){
+	pushAddressToStack();
+	PC = addr;
+}
+
+void gotoAddr(unsigned short addr){
+	PC = addr;
+}
+
+void nextInstruction(){
+	PC += 0x2;
 }

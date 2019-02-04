@@ -16,7 +16,7 @@
 
 unsigned char *memory;
 unsigned short *stack;
-unsigned short SP; // stack pointer
+unsigned short *SP; // stack pointer
 
 // Registers are 16 bits or 2 bytes long
 

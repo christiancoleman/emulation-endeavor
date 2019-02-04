@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 
+char * ROM_NAME = "_TETRIS";
+
 void loadRom();
 int getSizeOfFile(FILE*);
 
@@ -14,7 +16,7 @@ void loadRom(){
 
 	FILE * fp;
 
-	fp = fopen("TETRIS", "rb"); // b is binary mode
+	fp = fopen(ROM_NAME, "rb"); // b is binary mode
 
 	int sz = getSizeOfFile(fp);
 
