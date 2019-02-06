@@ -1,0 +1,33 @@
+// Put this file here:
+// "C:\Users\[User Name]\AppData\Roaming\Sublime Text 3\Packages\User"
+// Use "Ctrl+B" to Build and "Crtl+Shift+B" to Run the project.
+// OR use "Tools -> Build System -> New Build System..." and put the code there.
+
+{
+	"cmd" :
+	[
+		"gcc"
+		, "${file_name}"
+		, "-o"
+		, "${file_base_name}.exe"
+		//, "&&"
+		//, "${file_base_name}.exe"
+	],
+
+	// Doesn't work, sublime text 3, Windows 8.1
+	// "cmd" : ["gcc $file_name -o ${file_base_name}"],
+
+	"selector" : "source.c",
+	"shell": true,
+	"working_dir" : "$file_path",
+
+	// You could add path to your gcc compiler this and don't add path to your "PATH environment variable"
+	// "path" : "C:\\MinGW\\bin"
+
+	/*"variants" : [
+		{
+			"name": "Run",
+			"cmd" : ["${file_base_name}.exe"]
+		}
+	]*/
+}
