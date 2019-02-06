@@ -121,12 +121,10 @@ void startEmulation(){
 			unsigned char lastByte = getLastByte(opcodeClean);
 
 			// get Vx
-			unsigned short lowNibbleOnFirstByteSHORT = opcodeClean - lastByte;
-			lowNibbleOnFirstByteSHORT = lowNibbleOnFirstByteSHORT >> 8;
-			unsigned char lowNibbleOnFirstByteCHAR = lowNibbleOnFirstByteSHORT;
-			unsigned char *dynamicRegister = getRegister(lowNibbleOnFirstByteCHAR);
+			unsigned char lowNibbleOnFirstByte = getLowNibble(getFirstByte(opcode));
+			unsigned char *VXdynamicRegister = getRegister(lowNibbleOnFirstByte);
 
-			if(*dynamicRegister == lastByte){
+			if(*VXdynamicRegister == lastByte){
 				skipNextInstruction();
 			} else {
 				nextInstruction();
@@ -145,12 +143,10 @@ void startEmulation(){
 			unsigned char lastByte = getLastByte(opcodeClean);
 
 			// get Vx
-			unsigned short lowNibbleOnFirstByteSHORT = opcodeClean - lastByte;
-			lowNibbleOnFirstByteSHORT = lowNibbleOnFirstByteSHORT >> 8;
-			unsigned char lowNibbleOnFirstByteCHAR = lowNibbleOnFirstByteSHORT;
-			unsigned char *dynamicRegister = getRegister(lowNibbleOnFirstByteCHAR);
+			unsigned char lowNibbleOnFirstByte = getLowNibble(getFirstByte(opcode));
+			unsigned char *VXdynamicRegister = getRegister(lowNibbleOnFirstByte);
 
-			if(*dynamicRegister != lastByte){
+			if(*VXdynamicRegister != lastByte){
 				skipNextInstruction();
 			} else {
 				nextInstruction();
@@ -169,16 +165,14 @@ void startEmulation(){
 			unsigned char lastByte = getLastByte(opcodeClean);
 
 			// get Vx
-			unsigned short lowNibbleOnFirstByteSHORT = opcodeClean - lastByte;
-			lowNibbleOnFirstByteSHORT = lowNibbleOnFirstByteSHORT >> 8;
-			unsigned char lowNibbleOnFirstByteCHAR = lowNibbleOnFirstByteSHORT;
-			unsigned char *XdynamicRegister = getRegister(lowNibbleOnFirstByteCHAR);
+			unsigned char lowNibbleOnFirstByte = getLowNibble(getFirstByte(opcode));
+			unsigned char *VXdynamicRegister = getRegister(lowNibbleOnFirstByte);
 
 			// get Vy
-			unsigned char highNibbleOnSecondByteCHAR = getHighNibble(lastByte);
-			unsigned char *YdynamicRegister = getRegister(highNibbleOnSecondByteCHAR);
+			unsigned char highNibbleOnSecondByte = getHighNibble(lastByte);
+			unsigned char *VYdynamicRegister = getRegister(highNibbleOnSecondByte);
 
-			if(*XdynamicRegister == *YdynamicRegister){
+			if(*VXdynamicRegister == *VYdynamicRegister){
 				skipNextInstruction();
 			} else {
 				nextInstruction();
@@ -197,12 +191,10 @@ void startEmulation(){
 			unsigned char lastByte = getLastByte(opcodeClean);
 
 			// get Vx
-			unsigned short lowNibbleOnFirstByteSHORT = opcodeClean - lastByte;
-			lowNibbleOnFirstByteSHORT = lowNibbleOnFirstByteSHORT >> 8;
-			unsigned char lowNibbleOnFirstByteCHAR = lowNibbleOnFirstByteSHORT;
-			unsigned char *dynamicRegister = getRegister(lowNibbleOnFirstByteCHAR);
+			unsigned char lowNibbleOnFirstByte = getLowNibble(getFirstByte(opcode));
+			unsigned char *VXdynamicRegister = getRegister(lowNibbleOnFirstByte);
 
-			*dynamicRegister = lastByte;
+			*VXdynamicRegister = lastByte;
 
 			nextInstruction();
 		}
@@ -219,12 +211,10 @@ void startEmulation(){
 			unsigned char lastByte = getLastByte(opcodeClean);
 
 			// get Vx
-			unsigned short lowNibbleOnFirstByteSHORT = opcodeClean - lastByte;
-			lowNibbleOnFirstByteSHORT = lowNibbleOnFirstByteSHORT >> 8;
-			unsigned char lowNibbleOnFirstByteCHAR = lowNibbleOnFirstByteSHORT;
-			unsigned char *dynamicRegister = getRegister(lowNibbleOnFirstByteCHAR);
+			unsigned char lowNibbleOnFirstByte = getLowNibble(getFirstByte(opcode));
+			unsigned char *VXdynamicRegister = getRegister(lowNibbleOnFirstByte);
 
-			*dynamicRegister = *dynamicRegister + lastByte;
+			*VXdynamicRegister = *VXdynamicRegister + lastByte;
 
 			nextInstruction();
 		}
@@ -320,16 +310,14 @@ void startEmulation(){
 			unsigned char lastByte = getLastByte(opcodeClean);
 
 			// get Vx
-			unsigned short lowNibbleOnFirstByteSHORT = opcodeClean - lastByte;
-			lowNibbleOnFirstByteSHORT = lowNibbleOnFirstByteSHORT >> 8;
-			unsigned char lowNibbleOnFirstByteCHAR = lowNibbleOnFirstByteSHORT;
-			unsigned char *XdynamicRegister = getRegister(lowNibbleOnFirstByteCHAR);
+			unsigned char lowNibbleOnFirstByte = getLowNibble(getFirstByte(opcode));
+			unsigned char *VXdynamicRegister = getRegister(lowNibbleOnFirstByte);
 
 			// get Vy
-			unsigned char highNibbleOnSecondByteCHAR = getHighNibble(lastByte);
-			unsigned char *YdynamicRegister = getRegister(highNibbleOnSecondByteCHAR);
+			unsigned char highNibbleOnSecondByte = getHighNibble(lastByte);
+			unsigned char *VYdynamicRegister = getRegister(highNibbleOnSecondByte);
 
-			if(*XdynamicRegister != *YdynamicRegister){
+			if(*VXdynamicRegister != *VYdynamicRegister){
 				skipNextInstruction();
 			} else {
 				nextInstruction();
@@ -369,12 +357,10 @@ void startEmulation(){
 			unsigned char lastByte = getLastByte(opcodeClean);
 
 			// get Vx
-			unsigned short lowNibbleOnFirstByteSHORT = opcodeClean - lastByte;
-			lowNibbleOnFirstByteSHORT = lowNibbleOnFirstByteSHORT >> 8;
-			unsigned char lowNibbleOnFirstByteCHAR = lowNibbleOnFirstByteSHORT;
-			unsigned char *XdynamicRegister = getRegister(lowNibbleOnFirstByteCHAR);
+			unsigned char lowNibbleOnFirstByte = getLowNibble(getFirstByte(opcode));
+			unsigned char *VXdynamicRegister = getRegister(lowNibbleOnFirstByte);
 
-			*XdynamicRegister = rand() & lastByte;
+			*VXdynamicRegister = rand() & lastByte;
 
 			nextInstruction();
 		}
