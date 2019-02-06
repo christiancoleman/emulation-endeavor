@@ -23,6 +23,7 @@ void nextInstruction();
 void skipNextInstruction();
 unsigned char getHighNibble(unsigned char);
 unsigned char getLowNibble(unsigned char);
+unsigned char getFirstByte(unsigned short);
 unsigned char getLastByte(unsigned short);
 
 unsigned short getOpcode(int index){
@@ -45,6 +46,14 @@ void startEmulation(){
 		printf("#################################################\n");
 
 		unsigned short opcode = getOpcode(PC);
+
+		/*printf("~~~opcode~~~ %x\n", opcode);
+		printf("~~~firstbyte~~~ %x\n", getFirstByte(opcode));
+		printf("~~~lastbyte~~~ %x\n", getLastByte(opcode));
+		printf("~~~1nib1byte~~~ %x\n", getHighNibble(getFirstByte(opcode)));
+		printf("~~~2nib1byte~~~ %x\n", getLowNibble(getFirstByte(opcode)));
+		printf("~~~2nib1byte~~~ %x\n", getHighNibble(getLastByte(opcode)));
+		printf("~~~2nib2byte~~~ %x\n", getLowNibble(getLastByte(opcode)));*/
 
 		// Special zero case #1
 		// Clears the screen.
@@ -107,7 +116,11 @@ void startEmulation(){
 		// if(Vx!=NN)
 		else if( (0x3000 <= opcode) && (opcode <= 0x3FFF) ){
 			unsigned short opcodeClean = removeBase(opcode, 0x3000);
+
+			// get NN
 			unsigned char lastByte = getLastByte(opcodeClean);
+
+			// get Vx
 			unsigned short lowNibbleOnFirstByteSHORT = opcodeClean - lastByte;
 			lowNibbleOnFirstByteSHORT = lowNibbleOnFirstByteSHORT >> 8;
 			unsigned char lowNibbleOnFirstByteCHAR = lowNibbleOnFirstByteSHORT;
@@ -116,10 +129,8 @@ void startEmulation(){
 			if(*dynamicRegister == lastByte){
 				skipNextInstruction();
 			} else {
-				// do nothing
+				nextInstruction();
 			}
-
-			nextInstruction();
 		}
 
 		// All 0x4*** cases are the same
@@ -129,6 +140,21 @@ void startEmulation(){
 		// if(Vx==NN)
 		else if( (0x4000 <= opcode) && (opcode <= 0x4FFF) ){
 			unsigned short opcodeClean = removeBase(opcode, 0x4000);
+
+			// get NN
+			unsigned char lastByte = getLastByte(opcodeClean);
+
+			// get Vx
+			unsigned short lowNibbleOnFirstByteSHORT = opcodeClean - lastByte;
+			lowNibbleOnFirstByteSHORT = lowNibbleOnFirstByteSHORT >> 8;
+			unsigned char lowNibbleOnFirstByteCHAR = lowNibbleOnFirstByteSHORT;
+			unsigned char *dynamicRegister = getRegister(lowNibbleOnFirstByteCHAR);
+
+			if(*dynamicRegister != lastByte){
+				skipNextInstruction();
+			} else {
+				nextInstruction();
+			}
 		}
 
 		// All 0x5*** cases are the same
@@ -138,6 +164,25 @@ void startEmulation(){
 		// if(Vx!=Vy)
 		else if( (0x5000 <= opcode) && (opcode <= 0x5FFF) ){
 			unsigned short opcodeClean = removeBase(opcode, 0x5000);
+
+			// get last byte (usually NN but that's not needed for this operation but is needed for lowNibble)
+			unsigned char lastByte = getLastByte(opcodeClean);
+
+			// get Vx
+			unsigned short lowNibbleOnFirstByteSHORT = opcodeClean - lastByte;
+			lowNibbleOnFirstByteSHORT = lowNibbleOnFirstByteSHORT >> 8;
+			unsigned char lowNibbleOnFirstByteCHAR = lowNibbleOnFirstByteSHORT;
+			unsigned char *XdynamicRegister = getRegister(lowNibbleOnFirstByteCHAR);
+
+			// get Vy
+			unsigned char highNibbleOnSecondByteCHAR = getHighNibble(lastByte);
+			unsigned char *YdynamicRegister = getRegister(highNibbleOnSecondByteCHAR);
+
+			if(*XdynamicRegister == *YdynamicRegister){
+				skipNextInstruction();
+			} else {
+				nextInstruction();
+			}
 		}
 
 		// All 0x6*** cases are the same
@@ -147,7 +192,11 @@ void startEmulation(){
 		// Vx = NN
 		else if( (0x6000 <= opcode) && (opcode <= 0x6FFF) ){
 			unsigned short opcodeClean = removeBase(opcode, 0x6000);
+
+			// get NN
 			unsigned char lastByte = getLastByte(opcodeClean);
+
+			// get Vx
 			unsigned short lowNibbleOnFirstByteSHORT = opcodeClean - lastByte;
 			lowNibbleOnFirstByteSHORT = lowNibbleOnFirstByteSHORT >> 8;
 			unsigned char lowNibbleOnFirstByteCHAR = lowNibbleOnFirstByteSHORT;
@@ -165,7 +214,11 @@ void startEmulation(){
 		// Vx += NN
 		else if( (0x7000 <= opcode) && (opcode <= 0x7FFF) ){
 			unsigned short opcodeClean = removeBase(opcode, 0x7000);
+
+			// get NN
 			unsigned char lastByte = getLastByte(opcodeClean);
+
+			// get Vx
 			unsigned short lowNibbleOnFirstByteSHORT = opcodeClean - lastByte;
 			lowNibbleOnFirstByteSHORT = lowNibbleOnFirstByteSHORT >> 8;
 			unsigned char lowNibbleOnFirstByteCHAR = lowNibbleOnFirstByteSHORT;
@@ -177,6 +230,11 @@ void startEmulation(){
 		}
 
 		// 8 ////////////////////////////////////////////////
+
+		// TODO: COME BACK TO THIS
+		/*else if( (0x8000 <= opcode) && (opcode <= 0x8FFF) ){
+			unsigned short opcodeClean = removeBase(opcode, 0x7000);
+		}*/
 
 		// Sets VX to the value of VY.
 		// type: Assign
@@ -257,9 +315,25 @@ void startEmulation(){
 		// if(Vx==Vy)
 		else if( (0x9000 <= opcode) && (opcode <= 0x9FFF) ){
 			unsigned short opcodeClean = removeBase(opcode, 0x9000);
-			//if()
-			//skipNextInstruction();
-			//else
+
+			// get last byte (usually NN but that's not needed for this operation but is needed for lowNibble)
+			unsigned char lastByte = getLastByte(opcodeClean);
+
+			// get Vx
+			unsigned short lowNibbleOnFirstByteSHORT = opcodeClean - lastByte;
+			lowNibbleOnFirstByteSHORT = lowNibbleOnFirstByteSHORT >> 8;
+			unsigned char lowNibbleOnFirstByteCHAR = lowNibbleOnFirstByteSHORT;
+			unsigned char *XdynamicRegister = getRegister(lowNibbleOnFirstByteCHAR);
+
+			// get Vy
+			unsigned char highNibbleOnSecondByteCHAR = getHighNibble(lastByte);
+			unsigned char *YdynamicRegister = getRegister(highNibbleOnSecondByteCHAR);
+
+			if(*XdynamicRegister != *YdynamicRegister){
+				skipNextInstruction();
+			} else {
+				nextInstruction();
+			}
 		}
 
 		// All 0x0A*** cases are the same
@@ -290,6 +364,19 @@ void startEmulation(){
 		// Vx=rand()&NN
 		else if( (0xC000 <= opcode) && (opcode <= 0xCFFF) ){
 			unsigned short opcodeClean = removeBase(opcode, 0xC000);
+
+			// get NN
+			unsigned char lastByte = getLastByte(opcodeClean);
+
+			// get Vx
+			unsigned short lowNibbleOnFirstByteSHORT = opcodeClean - lastByte;
+			lowNibbleOnFirstByteSHORT = lowNibbleOnFirstByteSHORT >> 8;
+			unsigned char lowNibbleOnFirstByteCHAR = lowNibbleOnFirstByteSHORT;
+			unsigned char *XdynamicRegister = getRegister(lowNibbleOnFirstByteCHAR);
+
+			*XdynamicRegister = rand() & lastByte;
+
+			nextInstruction();
 		}
 
 		// All 0xD*** cases are the same
@@ -400,7 +487,15 @@ void startEmulation(){
 
 		else {
 			printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+			printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+			printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+			printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+			printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
 			printf("Instruction not found at: %x with value of: %x\n", PC, opcode);
+			printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+			printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+			printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+			printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
 			printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
 			PC += 0x2;
 		}
@@ -463,6 +558,12 @@ unsigned char getHighNibble(unsigned char c){
 
 unsigned char getLowNibble(unsigned char c){
 	c = c & 0x0F;
+	return c;
+}
+
+unsigned char getFirstByte(unsigned short s){
+	s = s >> 8;
+	unsigned char c = s;
 	return c;
 }
 
