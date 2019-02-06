@@ -58,3 +58,7 @@ void loadFontSet(){
 void clearScreen(){
 	printf("\tClearing the screen...\n");
 }
+
+void draw(){
+	printf("\t~~~ DRAWING ~~~\n");
+}

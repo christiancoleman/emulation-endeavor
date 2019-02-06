@@ -101,7 +101,7 @@ void startEmulation(){
 		else if( (0x2000 <= opcode) && (opcode <= 0x2FFF) ){
 			printf("Found 0x2NNN at: %x with value of: %x\n", PC, opcode);
 			unsigned short opcodeClean = removeBase(opcode, 0x2000);
-			gotoAddr(opcodeClean);
+			call(opcodeClean);
 		}
 
 		// All 0x3*** cases are the same
@@ -140,17 +140,27 @@ void startEmulation(){
 		// template: 6XNN
 		// Vx = NN
 		else if( (0x6000 <= opcode) && (opcode <= 0x6FFF) ){
-			printf("Found 0x6XNN at: %x with value of: %x\n", PC, opcode);
-			unsigned short opcodeClean = removeBase(opcode, 0x6000);
-			printf("~~~~~~~~~~~~~~~~%x\n", opcodeClean);
-			
-			V9 = 0x69;
-			printf("V9 is: %x\n", V9);
+			//VA = 0xFF;
+			//printf("VA is: %x\n", VA);
 
-			unsigned char *ss = getRegister(0x9);
-			*ss = 0x70;
-			printf("V9 is: %x\n", V9);
-			printf("ss is: %x\n", *ss);
+			//printf("Found 0x6XNN at: %x with value of: %x\n", PC, opcode);
+			unsigned short opcodeClean = removeBase(opcode, 0x6000);
+			//printf("~~~~~~~~~~~~~~~~Clean op is: %x\n", opcodeClean);
+			
+			unsigned char lastByte = getLastByte(opcodeClean);
+			//printf("~~~~~~~~~~~~~~~~Last byte is: %x\n", lastByte);
+			
+			unsigned short lowNibbleShort = opcodeClean - lastByte;
+			//printf("%x\n", lowNibbleShort);
+			lowNibbleShort = lowNibbleShort >> 8;
+			unsigned char lowNibble = lowNibbleShort;
+			//printf("~~~~~~~~~~~~~~~~Low nibble is: %x\n", lowNibble);
+			
+			unsigned char *dynamicRegister = getRegister(lowNibble);
+			*dynamicRegister = lastByte;
+
+			//printf("VA is: %x\n", VA);
+
 			nextInstruction();
 		}
 
@@ -160,8 +170,28 @@ void startEmulation(){
 		// template: 7XNN
 		// Vx += NN
 		else if( (0x7000 <= opcode) && (opcode <= 0x7FFF) ){
-			printf("Found 0x7XNN at: %x with value of: %x\n", PC, opcode);
+			//VA = 0xFF;
+			//printf("VA is: %x\n", VA);
+
+			//printf("Found 0x7XNN at: %x with value of: %x\n", PC, opcode);
 			unsigned short opcodeClean = removeBase(opcode, 0x7000);
+			//printf("~~~~~~~~~~~~~~~~Clean op is: %x\n", opcodeClean);
+			
+			unsigned char lastByte = getLastByte(opcodeClean);
+			//printf("~~~~~~~~~~~~~~~~Last byte is: %x\n", lastByte);
+			
+			unsigned short lowNibbleShort = opcodeClean - lastByte;
+			//printf("%x\n", lowNibbleShort);
+			lowNibbleShort = lowNibbleShort >> 8;
+			unsigned char lowNibble = lowNibbleShort;
+			//printf("~~~~~~~~~~~~~~~~Low nibble is: %x\n", lowNibble);
+			
+			unsigned char *dynamicRegister = getRegister(lowNibble);
+			*dynamicRegister = lastByte;
+
+			//printf("VA is: %x\n", VA);
+
+			nextInstruction();
 		}
 
 		// 8 ////////////////////////////////////////////////
@@ -300,6 +330,8 @@ void startEmulation(){
 		else if( (0xD000 <= opcode) && (opcode <= 0xDFFF) ){
 			printf("Found 0xDXYN at: %x with value of: %x\n", PC, opcode);
 			unsigned short opcodeClean = removeBase(opcode, 0xD000);
+			draw();
+			nextInstruction();
 		}
 
 		// E ////////////////////////////////////////////////
@@ -419,6 +451,7 @@ void startEmulation(){
 }
 
 void DEBUG_dumpState(){
+	printf("Stack: \t%x\n", stack);
 	printf("SP: \t%x\n", SP);
 	printf("PC: \t%x\n", PC);
 	printf("I: \t%x\n", I);
@@ -463,8 +496,12 @@ void pushAddressToStack(){
 	// make room for new value on stack
 	SP += 0x2;
 
+	printf("SP is: %x\n", SP);
+
 	// store the address of the instruction after the call
 	*SP = PC + 0x2;
+
+	printf("*SP is: %x\n", *SP);
 }
 
 void popAddressFromStack(){
