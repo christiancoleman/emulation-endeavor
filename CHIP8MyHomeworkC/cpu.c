@@ -49,8 +49,8 @@ void startEmulation(){
 			printf("Found 0x00E0 at: %x\n", PC);
 			clearScreen();
 			nextInstruction();
-		} 
-		
+		}
+
 		// Special zero case #2
 		// return from subroutine
 		// type: Flow
@@ -62,8 +62,8 @@ void startEmulation(){
 			// We are NOT incrementing PC so this code won't work
 			// unless all function calls are implemented correctly
 			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		} 
-		
+		}
+
 		// Generic zero case catch
 		// Calls RCA 1802 program at address NNN. Not necessary for most ROMs.
 		// type: Call
@@ -72,8 +72,8 @@ void startEmulation(){
 			printf("Found 0x0NNN at: %x with value of: %x\n", PC, opcode);
 			pushAddressToStack();
 			call(opcode); // go to NNN, since it begins with a zero we don't need any bitwise stuff to get the address
-		} 
-		
+		}
+
 		// All 0x1*** cases are the same
 		// Jumps to address NNN.
 		// type: Flow
@@ -81,8 +81,8 @@ void startEmulation(){
 		else if( (0x1000 <= opcode) && (opcode <= 0x1FFF) ){
 			printf("Found 0x1NNN at: %x with value of: %x\n", PC, opcode);
 			gotoAddr(opcode - 0x1000);
-		} 
-		
+		}
+
 		// All 0x2*** cases are the same
 		// Calls subroutine at NNN.
 		// type: Flow
@@ -91,7 +91,7 @@ void startEmulation(){
 			printf("Found 0x2NNN at: %x with value of: %x\n", PC, opcode);
 			gotoAddr(opcode - 0x2000);
 		}
-		
+
 		// All 0x3*** cases are the same
 		// 	Skips the next instruction if VX equals NN. (Usually the next instruction is a jump to skip a code block)
 		// type: Condition
@@ -105,8 +105,8 @@ void startEmulation(){
 		// type: Condition
 		// if(Vx==NN)
 		else if( (0x4000 <= opcode) && (opcode <= 0x4FFF) ){
-			printf("Found 0x4XNN at: %x with value of: %x\n", PC, opcode);	
-		} 
+			printf("Found 0x4XNN at: %x with value of: %x\n", PC, opcode);
+		}
 
 		// All 0x5*** cases are the same
 		// Skips the next instruction if VX equals VY. (Usually the next instruction is a jump to skip a code block)
@@ -114,15 +114,15 @@ void startEmulation(){
 		// if(Vx!=Vy)
 		else if( (0x5000 <= opcode) && (opcode <= 0x5FFF) ){
 			printf("Found 0x5XY0 at: %x with value of: %x\n", PC, opcode);
-		} 
+		}
 
 		// All 0x6*** cases are the same
 		// Sets VX to NN.
 		// type: Constant
-		// Vx = NN	
+		// Vx = NN
 		else if( (0x6000 <= opcode) && (opcode <= 0x6FFF) ){
 			printf("Found 0x6XNN at: %x with value of: %x\n", PC, opcode);
-		} 
+		}
 
 		// All 0x7*** cases are the same
 		// Adds NN to VX. (Carry flag is not changed)
@@ -335,7 +335,7 @@ void startEmulation(){
 
 void DEBUG_dumpState(){
 	printf("SP: \t%x\n", SP);
-	printf("PC: \t%x\n:", PC);
+	printf("PC: \t%x\n", PC);
 	printf("I: \t%x\n", I);
 	printf("V0: \t%x\n", V0);
 	printf("V1: \t%x\n", V1);
