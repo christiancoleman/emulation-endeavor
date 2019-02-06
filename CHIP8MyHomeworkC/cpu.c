@@ -15,18 +15,22 @@
 unsigned short getOpcode(int);
 void startEmulation();
 void DEBUG_dumpState();
+unsigned short removeBase(unsigned short, unsigned short);
 void pushAddressToStack();
 void popAddressFromStack();
 void call(unsigned short);
 void gotoAddr(unsigned short);
 void nextInstruction();
 void skipNextInstruction();
+unsigned char getHighNibble(unsigned char);
+unsigned char getLowNibble(unsigned char);
+unsigned char getLastByte(unsigned short);
 
 unsigned short getOpcode(int index){
-	unsigned short result = 0x0000;
-	result = memory[index] << 8; // 0xA2 into 0xA200
-	result += memory[index + 1];
-	return result;
+	unsigned short result = 0x0000;	// Example: 0xA2B4 in memory
+	result = memory[index] << 8; 	// 0xA2 into 0xA200
+	result += memory[index + 1];	// 0xA200 + 0xB4
+	return result;					// return 0xA2B4
 }
 
 void startEmulation(){
@@ -85,7 +89,8 @@ void startEmulation(){
 		// goto NNN
 		else if( (0x1000 <= opcode) && (opcode <= 0x1FFF) ){
 			printf("Found 0x1NNN at: %x with value of: %x\n", PC, opcode);
-			gotoAddr(opcode - 0x1000);
+			unsigned short opcodeClean = removeBase(opcode, 0x1000);
+			gotoAddr(opcodeClean);
 		}
 
 		// All 0x2*** cases are the same
@@ -95,7 +100,8 @@ void startEmulation(){
 		// *(0xNNN)()
 		else if( (0x2000 <= opcode) && (opcode <= 0x2FFF) ){
 			printf("Found 0x2NNN at: %x with value of: %x\n", PC, opcode);
-			gotoAddr(opcode - 0x2000);
+			unsigned short opcodeClean = removeBase(opcode, 0x2000);
+			gotoAddr(opcodeClean);
 		}
 
 		// All 0x3*** cases are the same
@@ -105,6 +111,7 @@ void startEmulation(){
 		// if(Vx!=NN)
 		else if( (0x3000 <= opcode) && (opcode <= 0x3FFF) ){
 			printf("Found 0x3XNN at: %x with value of: %x\n", PC, opcode);
+			unsigned short opcodeClean = removeBase(opcode, 0x3000);
 		}
 
 		// All 0x4*** cases are the same
@@ -114,6 +121,7 @@ void startEmulation(){
 		// if(Vx==NN)
 		else if( (0x4000 <= opcode) && (opcode <= 0x4FFF) ){
 			printf("Found 0x4XNN at: %x with value of: %x\n", PC, opcode);
+			unsigned short opcodeClean = removeBase(opcode, 0x4000);
 		}
 
 		// All 0x5*** cases are the same
@@ -123,6 +131,7 @@ void startEmulation(){
 		// if(Vx!=Vy)
 		else if( (0x5000 <= opcode) && (opcode <= 0x5FFF) ){
 			printf("Found 0x5XY0 at: %x with value of: %x\n", PC, opcode);
+			unsigned short opcodeClean = removeBase(opcode, 0x5000);
 		}
 
 		// All 0x6*** cases are the same
@@ -132,7 +141,16 @@ void startEmulation(){
 		// Vx = NN
 		else if( (0x6000 <= opcode) && (opcode <= 0x6FFF) ){
 			printf("Found 0x6XNN at: %x with value of: %x\n", PC, opcode);
+			unsigned short opcodeClean = removeBase(opcode, 0x6000);
+			printf("~~~~~~~~~~~~~~~~%x\n", opcodeClean);
+			
+			V9 = 0x69;
+			printf("V9 is: %x\n", V9);
 
+			unsigned char *ss = getRegister(0x9);
+			*ss = 0x70;
+			printf("V9 is: %x\n", V9);
+			printf("ss is: %x\n", *ss);
 			nextInstruction();
 		}
 
@@ -143,6 +161,7 @@ void startEmulation(){
 		// Vx += NN
 		else if( (0x7000 <= opcode) && (opcode <= 0x7FFF) ){
 			printf("Found 0x7XNN at: %x with value of: %x\n", PC, opcode);
+			unsigned short opcodeClean = removeBase(opcode, 0x7000);
 		}
 
 		// 8 ////////////////////////////////////////////////
@@ -153,6 +172,7 @@ void startEmulation(){
 		// Vx=Vy
 		/*case 0x8XY0:
 			printf("Found 0x8XY0 at: %x\n", PC);
+			unsigned short opcodeClean = removeBase(opcode, 0x8000);
 			break;*/
 
 		// Sets VX to VX or VY. (Bitwise OR operation)
@@ -161,6 +181,7 @@ void startEmulation(){
 		// Vx=Vx|Vy
 		/*case 0x8XY1:
 			printf("Found 0x8XY1 at: %x\n", PC);
+			unsigned short opcodeClean = removeBase(opcode, 0x8000);
 			break;*/
 
 		// Sets VX to VX and VY. (Bitwise AND operation)
@@ -169,6 +190,7 @@ void startEmulation(){
 		// Vx=Vx&Vy
 		/*case 0x8XY2:
 			printf("Found 0x8XY2 at: %x\n", PC);
+			unsigned short opcodeClean = removeBase(opcode, 0x8000);
 			break;*/
 
 		// Sets VX to VX xor VY.
@@ -177,6 +199,7 @@ void startEmulation(){
 		// Vx=Vx^Vy
 		/*case 0x8XY3:
 			printf("Found 0x8XY3 at: %x\n", PC);
+			unsigned short opcodeClean = removeBase(opcode, 0x8000);
 			break;*/
 
 		// Adds VY to VX. VF is set to 1 when there's a carry, and to 0 when there isn't.
@@ -185,6 +208,7 @@ void startEmulation(){
 		// Vx += Vy
 		/*case 0x8XY4:
 			printf("Found 0x8XY4 at: %x\n", PC);
+			unsigned short opcodeClean = removeBase(opcode, 0x8000);
 			break;*/
 
 		// VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
@@ -193,6 +217,7 @@ void startEmulation(){
 		// Vx -= Vy
 		/*case 0x8XY5:
 			printf("Found 0x8XY5 at: %x\n", PC);
+			unsigned short opcodeClean = removeBase(opcode, 0x8000);
 			break;*/
 
 		// Stores the least significant bit of VX in VF and then shifts VX to the right by 1
@@ -201,6 +226,7 @@ void startEmulation(){
 		// Vx>>=1
 		/*case 0x8XY6:
 			printf("Found 0x8XY6 at: %x\n", PC);
+			unsigned short opcodeClean = removeBase(opcode, 0x8000);
 			break;*/
 
 		// Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
@@ -209,6 +235,7 @@ void startEmulation(){
 		// Vx=Vy-Vx
 		/*case 0x8XY7:
 			printf("Found 0x8XY7 at: %x\n", PC);
+			unsigned short opcodeClean = removeBase(opcode, 0x8000);
 			break;*/
 
 		// Stores the most significant bit of VX in VF and then shifts VX to the left by 1
@@ -217,6 +244,7 @@ void startEmulation(){
 		// Vx<<=1
 		/*case 0x8XYE:
 			printf("Found 0x8XYE at: %x\n", PC);
+			unsigned short opcodeClean = removeBase(opcode, 0x8000);
 			break;*/
 
 		// All 0x9*** cases are the same
@@ -226,6 +254,7 @@ void startEmulation(){
 		// if(Vx==Vy)
 		else if( (0x9000 <= opcode) && (opcode <= 0x9FFF) ){
 			printf("Found 0x9XY0 at: %x with value of: %x\n", PC, opcode);
+			unsigned short opcodeClean = removeBase(opcode, 0x9000);
 			//if()
 			//skipNextInstruction();
 			//else
@@ -238,7 +267,8 @@ void startEmulation(){
 		// I = NNN
 		else if( (0xA000 <= opcode) && (opcode <= 0xAFFF) ){
 			//printf("Found 0xANNN at: %x with value of: %x\n", PC, opcode);
-			I = opcode - 0xA000;
+			unsigned short opcodeClean = removeBase(opcode, 0xA000);
+			I = opcodeClean;
 			nextInstruction();
 		}
 
@@ -249,6 +279,7 @@ void startEmulation(){
 		// PC=V0+NNN
 		else if( (0xB000 <= opcode) && (opcode <= 0xBFFF) ){
 			printf("Found 0xBNNN at: %x with value of: %x\n", PC, opcode);
+			unsigned short opcodeClean = removeBase(opcode, 0xB000);
 		}
 
 		// All 0xC*** cases are the same
@@ -258,6 +289,7 @@ void startEmulation(){
 		// Vx=rand()&NN
 		else if( (0xC000 <= opcode) && (opcode <= 0xCFFF) ){
 			printf("Found 0xCXNN at: %x with value of: %x\n", PC, opcode);
+			unsigned short opcodeClean = removeBase(opcode, 0xC000);
 		}
 
 		// All 0xD*** cases are the same
@@ -267,6 +299,7 @@ void startEmulation(){
 		// draw(Vx,Vy,N)
 		else if( (0xD000 <= opcode) && (opcode <= 0xDFFF) ){
 			printf("Found 0xDXYN at: %x with value of: %x\n", PC, opcode);
+			unsigned short opcodeClean = removeBase(opcode, 0xD000);
 		}
 
 		// E ////////////////////////////////////////////////
@@ -277,6 +310,7 @@ void startEmulation(){
 		// if(key()==Vx)
 		/*case 0xEX9E:
 			printf("Found 0xEX9E at: %x with value of: %x\n", PC, opcode);
+			unsigned short opcodeClean = removeBase(opcode, 0xE000);
 			break;*/
 
 		// 	Skips the next instruction if the key stored in VX isn't pressed. (Usually the next instruction is a jump to skip a code block)
@@ -285,6 +319,7 @@ void startEmulation(){
 		// if(key()!=Vx)
 		/*case 0xEXA1:
 			printf("Found 0xEXA1 at: %x with value of: %x\n", PC, opcode);
+			unsigned short opcodeClean = removeBase(opcode, 0xE000);
 			break;*/
 
 		// F ////////////////////////////////////////////////
@@ -295,6 +330,7 @@ void startEmulation(){
 		// Vx = get_delay()
 		/*case 0xFX07:
 			printf("Found 0xFX07 at: %x with value of: %x\n", PC, opcode);
+			unsigned short opcodeClean = removeBase(opcode, 0xF000);
 			break;*/
 
 		// A key press is awaited, and then stored in VX. (Blocking Operation. All instruction halted until next key event)
@@ -303,6 +339,7 @@ void startEmulation(){
 		// Vx = get_key()
 		/*case 0xFX0A:
 			printf("Found 0xFX0A at: %x with value of: %x\n", PC, opcode);
+			unsigned short opcodeClean = removeBase(opcode, 0xF000);
 			break;*/
 
 		// Sets the delay timer to VX.
@@ -311,6 +348,7 @@ void startEmulation(){
 		// delay_timer(Vx)
 		/*case 0xFX15:
 			printf("Found 0xFX15 at: %x with value of: %x\n", PC, opcode);
+			unsigned short opcodeClean = removeBase(opcode, 0xF000);
 			break;*/
 
 		// Sets the sound timer to VX.
@@ -319,6 +357,7 @@ void startEmulation(){
 		// sound_timer(Vx)
 		/*case 0xFX18:
 			printf("Found 0xFX18 at: %x with value of: %x\n", PC, opcode);
+			unsigned short opcodeClean = removeBase(opcode, 0xF000);
 			break;*/
 
 		// Adds VX to I
@@ -327,6 +366,7 @@ void startEmulation(){
 		// I +=Vx
 		/*case 0xFX1E:
 			printf("Found 0xFX1E at: %x with value of: %x\n", PC, opcode);
+			unsigned short opcodeClean = removeBase(opcode, 0xF000);
 			break;*/
 
 		// Sets I to the location of the sprite for the character in VX. Characters 0-F (in hexadecimal) are represented by a 4x5 font.
@@ -335,6 +375,7 @@ void startEmulation(){
 		// I=sprite_addr[Vx]
 		/*case 0xFX29:
 			printf("Found 0xFX29 at: %x with value of: %x\n", PC, opcode);
+			unsigned short opcodeClean = removeBase(opcode, 0xF000);
 			break;*/
 
 		// Stores the binary-coded decimal representation of VX, with the most significant of three digits at the address in I, the middle digit at I plus 1, and the least significant digit at I plus 2. (In other words, take the decimal representation of VX, place the hundreds digit in memory at location in I, the tens digit at location I+1, and the ones digit at location I+2.)
@@ -346,6 +387,7 @@ void startEmulation(){
 		// *(I+2)=BCD(1);
 		/*case 0xFX33:
 			printf("Found 0xFX33 at: %x with value of: %x\n", PC, opcode);
+			unsigned short opcodeClean = removeBase(opcode, 0xF000);
 			break;*/
 
 		// Stores V0 to VX (including VX) in memory starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.
@@ -354,6 +396,7 @@ void startEmulation(){
 		// reg_dump(Vx,&I)
 		/*case 0xFX55:
 			printf("Found 0xFX55 at: %x with value of: %x\n", PC, opcode);
+			unsigned short opcodeClean = removeBase(opcode, 0xF000);
 			break;*/
 
 		// Fills V0 to VX (including VX) with values from memory starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.
@@ -362,6 +405,7 @@ void startEmulation(){
 		// reg_load(Vx,&I)
 		/*case 0xFX65:
 			printf("Found 0xFX65 at: %x with value of: %x\n", PC, opcode);
+			unsigned short opcodeClean = removeBase(opcode, 0xF000);
 			break;*/
 
 		else {
@@ -411,6 +455,10 @@ void DEBUG_dumpState(){
 	}*/
 }
 
+unsigned short removeBase(unsigned short opcode, unsigned short base){
+	return opcode - base;
+}
+
 void pushAddressToStack(){
 	// make room for new value on stack
 	SP += 0x2;
@@ -443,4 +491,21 @@ void nextInstruction(){
 
 void skipNextInstruction(){
 	PC += 0x4;
+}
+
+unsigned char getHighNibble(unsigned char c){
+	c = c >> 4;
+	c = c & 0x0F;
+	return c;
+}
+
+unsigned char getLowNibble(unsigned char c){
+	c = c & 0x0F;
+	return c;
+}
+
+unsigned char getLastByte(unsigned short s){
+	// overflow should leave only what we want
+	unsigned char c = s;
+	return c;
 }

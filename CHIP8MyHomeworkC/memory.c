@@ -41,7 +41,7 @@ unsigned char VE;
 unsigned char VF; // doubles as a flag (should be avoided)
 
 void initMemory();
-unsigned char getRegister(unsigned char);
+unsigned char* getRegister(unsigned char);
 void DEBUG_printMemory();
 
 void initMemory(){
@@ -76,54 +76,54 @@ void initMemory(){
 	printf("Reset all memory and registers...\n");
 }
 
-unsigned char getRegister(unsigned char character){
+unsigned char* getRegister(unsigned char character){
 	if(character == 0x00){
-		return V0;
+		return &V0;
 	}
 	else if(character == 0x01){
-		return V1;
+		return &V1;
 	}
 	else if(character == 0x02){
-		return V2;
+		return &V2;
 	}
 	else if(character == 0x03){
-		return V3;
+		return &V3;
 	}
 	else if(character == 0x04){
-		return V4;
+		return &V4;
 	}
 	else if(character == 0x05){
-		return V5;
+		return &V5;
 	}
 	else if(character == 0x06){
-		return V6;
+		return &V6;
 	}
 	else if(character == 0x07){
-		return V7;
+		return &V7;
 	}
 	else if(character == 0x08){
-		return V8;
+		return &V8;
 	}
 	else if(character == 0x09){
-		return V9;
+		return &V9;
 	}
 	else if(character == 0x0A){
-		return VA;
+		return &VA;
 	}
 	else if(character == 0x0B){
-		return VB;
+		return &VB;
 	}
 	else if(character == 0x0C){
-		return VC;
+		return &VC;
 	}
 	else if(character == 0x0D){
-		return VD;
+		return &VD;
 	}
 	else if(character == 0x0E){
-		return VE;
+		return &VE;
 	}
 	else if(character == 0x01){
-		return VF;
+		return &VF;
 	}
 }
 
