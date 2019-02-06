@@ -43,6 +43,8 @@ unsigned char VF; // doubles as a flag (should be avoided)
 void initMemory();
 unsigned char* getRegister(unsigned char);
 void DEBUG_printMemory();
+void DEBUG_printState(unsigned short);
+void DEBUG_printStack();
 
 void initMemory(){
 	printf("\n");
@@ -51,7 +53,7 @@ void initMemory(){
 	printf("######################################################\n\n");
 
 	memory = calloc( ( 4096 + 1 ), sizeof(unsigned char) );
-	stack = calloc( ( 16 + 1 ), sizeof(unsigned char) );
+	stack = calloc( ( 16 + 1 ), sizeof(unsigned short) );
 	SP = stack;
 
 	PC = 0x0200; // This is the entry point for all CHIP-8 roms
@@ -136,5 +138,56 @@ void DEBUG_printMemory(){
 		printf("0x%x: 0x%x\t", i, memory[i]);
 		i++;
 		printf("0x%x: 0x%x\n", i, memory[i]);
+	}
+}
+
+void DEBUG_printState(unsigned short opcode){
+	printf("\n");
+	printf("Opcode: \t%x\n", opcode);
+	printf("\n");
+	printf("Stack: \t\t%x\n", stack);
+	printf("SP: \t\t%x\n", SP);
+	printf("SP*: \t\t%x\n", *SP);
+	printf("\n");
+	printf("PC: \t\t%x\n", PC);
+	printf("I: \t\t%x\n", I);
+	printf("\n");
+	printf("V0: \t\t%x\n", V0);
+	printf("V1: \t\t%x\n", V1);
+	printf("V2: \t\t%x\n", V2);
+	printf("V3: \t\t%x\n", V3);
+	printf("V4: \t\t%x\n", V4);
+	printf("V5: \t\t%x\n", V5);
+	printf("V6: \t\t%x\n", V6);
+	printf("V7: \t\t%x\n", V7);
+	printf("V8: \t\t%x\n", V8);
+	printf("V9: \t\t%x\n", V9);
+	printf("VA: \t\t%x\n", VA);
+	printf("VB: \t\t%x\n", VB);
+	printf("VC: \t\t%x\n", VC);
+	printf("VD: \t\t%x\n", VD);
+	printf("VE: \t\t%x\n", VE);
+	printf("VF: \t\t%x\n", VF);
+
+	printf("\nPress enter to continue stepping through the code...\n");
+	int d = getchar();
+
+	/*printf("\nPress i to step to the next instruction...\n");
+	printf("\nPress m to print memory...\n");
+
+	int c = getchar();
+	printf("c = %i\n", c);
+	if(c == 109){
+
+	}
+	else if(c == 231){
+
+	}*/
+}
+
+void DEBUG_printStack(){
+	printf("\n");
+	for(int i = 0; i < 16; i++){
+		printf("%x\n", stack[i]);
 	}
 }
