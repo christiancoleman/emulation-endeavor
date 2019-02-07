@@ -12,7 +12,7 @@ unsigned char *memory;
 unsigned short *stack;
 unsigned short *SP; // stack pointer
 
-// Registers are 16 bits or 2 bytes long
+
 
 //unsigned int I = 0xFFFFFFFF; // ints are 4 bytes
 unsigned short I; 	// shorts are 2 bytes

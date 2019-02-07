@@ -567,8 +567,8 @@ void doCycle(){
 		instructionNotFound(opcode);
 	}
 
-	//DEBUG_printStack();
-	//DEBUG_printState(opcode);
+	DEBUG_printStack();
+	DEBUG_printState(opcode);
 
 }
 
