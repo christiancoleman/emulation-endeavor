@@ -11,6 +11,8 @@
 
 #include "memory.c"
 #include "gpu.c"
+#include "controller.c"
+#include "timers.c"
 
 unsigned short getOpcode(int);
 void doCycle();
@@ -25,6 +27,8 @@ unsigned char getHighNibble(unsigned char);
 unsigned char getLowNibble(unsigned char);
 unsigned char getFirstByte(unsigned short);
 unsigned char getLastByte(unsigned short);
+void instructionNotFound(unsigned short);
+void instructionNotImplemented(unsigned short);
 
 unsigned short getOpcode(int index){
 	unsigned short result = 0x0000;	// Example: 0xA2B4 in memory
@@ -34,11 +38,6 @@ unsigned short getOpcode(int index){
 }
 
 void doCycle(){
-	printf("\n");
-	printf("######################################################\n");
-	printf("################ STARTING EMULATION ##################\n");
-	printf("######################################################\n\n");
-
 	printf("#################################################\n");
 
 	unsigned short opcode = getOpcode(PC);
@@ -213,81 +212,95 @@ void doCycle(){
 		unsigned short opcodeClean = removeBase(opcode, 0x8000);
 
 		unsigned char lastByte = getLastByte(opcodeClean);
-		unsigned char lastByteLastNibble = getLowNibble(lastByte);
+		unsigned char lowNibbleOnLastByte = getLowNibble(lastByte);
 
-		if(lastByteLastNibble == 0x0){
+		// get Vx
+		unsigned char lowNibbleOnFirstByte = getLowNibble(getFirstByte(opcodeClean));
+		unsigned char *VXdynamicRegister = getRegister(lowNibbleOnFirstByte);
+
+		// get Vy
+		unsigned char highNibbleOnSecondByte = getHighNibble(lastByte);
+		unsigned char *VYdynamicRegister = getRegister(highNibbleOnSecondByte);
+
+		switch(lowNibbleOnLastByte){
+
 			// Sets VX to the value of VY.
 			// type: Assign
 			// template: 8XY0
 			// Vx=Vy
-			/*case 0x8XY0:
-				unsigned short opcodeClean = removeBase(opcode, 0x8000);
-				break;*/
+			case 0x0:
+				*VXdynamicRegister = *VYdynamicRegister;
+				break;
+
+			// Sets VX to VX or VY. (Bitwise OR operation)
+			// type: BitOp
+			// template: 8XY1
+			// Vx=Vx|Vy
+			case 0x1:
+				*VXdynamicRegister = *VXdynamicRegister | *VYdynamicRegister;
+				break;
+
+			// Sets VX to VX and VY. (Bitwise AND operation)
+			// type: BitOp
+			// template: 8XY2
+			// Vx=Vx&Vy
+			case 0x2:
+				*VXdynamicRegister = *VXdynamicRegister & *VYdynamicRegister;
+				break;
+
+			// Sets VX to VX xor VY.
+			// type: BitOp
+			// template: 8XY3
+			// Vx=Vx^Vy
+			case 0x3:
+				*VXdynamicRegister = *VXdynamicRegister ^ *VYdynamicRegister;
+				break;
+
+			// Adds VY to VX. VF is set to 1 when there's a carry, and to 0 when there isn't.
+			// type: Math
+			// template: 8XY4
+			// Vx += Vy
+			case 0x4:
+				*VXdynamicRegister += *VYdynamicRegister;
+				break;
+
+			// VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
+			// type: Math
+			// template: 8XY5
+			// Vx -= Vy
+			case 0x5:
+				*VXdynamicRegister -= *VYdynamicRegister;
+				break;
+
+			// Stores the least significant bit of VX in VF and then shifts VX to the right by 1
+			// type: BitOp
+			// template: 8XY6
+			// Vx>>=1
+			case 0x6:
+				*VXdynamicRegister >>= 1;
+				break;
+
+			// Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
+			// type: Math
+			// template: 8XY7
+			// Vx=Vy-Vx
+			case 0x7:
+				*VXdynamicRegister = *VYdynamicRegister - *VXdynamicRegister;
+				break;
+
+			// Stores the most significant bit of VX in VF and then shifts VX to the left by 1
+			// type: BitOp
+			// template: 8XYE
+			// Vx<<=1
+			case 0xE:
+				*VXdynamicRegister <<= 1;
+				break;
+
+			default:
+				instructionNotFound(opcode);
 		}
 
-		// Sets VX to VX or VY. (Bitwise OR operation)
-		// type: BitOp
-		// template: 8XY1
-		// Vx=Vx|Vy
-		/*case 0x8XY1:
-			unsigned short opcodeClean = removeBase(opcode, 0x8000);
-			break;*/
-
-		// Sets VX to VX and VY. (Bitwise AND operation)
-		// type: BitOp
-		// template: 8XY2
-		// Vx=Vx&Vy
-		/*case 0x8XY2:
-			unsigned short opcodeClean = removeBase(opcode, 0x8000);
-			break;*/
-
-		// Sets VX to VX xor VY.
-		// type: BitOp
-		// template: 8XY3
-		// Vx=Vx^Vy
-		/*case 0x8XY3:
-			unsigned short opcodeClean = removeBase(opcode, 0x8000);
-			break;*/
-
-		// Adds VY to VX. VF is set to 1 when there's a carry, and to 0 when there isn't.
-		// type: Math
-		// template: 8XY4
-		// Vx += Vy
-		/*case 0x8XY4:
-			unsigned short opcodeClean = removeBase(opcode, 0x8000);
-			break;*/
-
-		// VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
-		// type: Math
-		// template: 8XY5
-		// Vx -= Vy
-		/*case 0x8XY5:
-			unsigned short opcodeClean = removeBase(opcode, 0x8000);
-			break;*/
-
-		// Stores the least significant bit of VX in VF and then shifts VX to the right by 1
-		// type: BitOp
-		// template: 8XY6
-		// Vx>>=1
-		/*case 0x8XY6:
-			unsigned short opcodeClean = removeBase(opcode, 0x8000);
-			break;*/
-
-		// Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
-		// type: Math
-		// template: 8XY7
-		// Vx=Vy-Vx
-		/*case 0x8XY7:
-			unsigned short opcodeClean = removeBase(opcode, 0x8000);
-			break;*/
-
-		// Stores the most significant bit of VX in VF and then shifts VX to the left by 1
-		// type: BitOp
-		// template: 8XYE
-		// Vx<<=1
-		/*case 0x8XYE:
-			unsigned short opcodeClean = removeBase(opcode, 0x8000);
-			break;*/
+		nextInstruction();
 	}
 
 	// All 0x9*** cases are the same
@@ -370,112 +383,142 @@ void doCycle(){
 
 	// E ////////////////////////////////////////////////
 
-	// Skips the next instruction if the key stored in VX is pressed. (Usually the next instruction is a jump to skip a code block)
-	// type: KeyOp
-	// template: 0xEX9E
-	// if(key()==Vx)
-	/*case 0xEX9E:
+	else if( (0xE000 <= opcode) && (opcode <= 0xEFFF) ){
 		unsigned short opcodeClean = removeBase(opcode, 0xE000);
-		break;*/
 
-	// 	Skips the next instruction if the key stored in VX isn't pressed. (Usually the next instruction is a jump to skip a code block)
-	// type: KeyOp
-	// template: EXA1
-	// if(key()!=Vx)
-	/*case 0xEXA1:
-		unsigned short opcodeClean = removeBase(opcode, 0xE000);
-		break;*/
+		// we match the instruction on the last byte
+		unsigned char lastByte = getLastByte(opcodeClean);
+
+		// get Vx
+		unsigned char lowNibbleOnFirstByte = getLowNibble(getFirstByte(opcodeClean));
+		unsigned char *VXdynamicRegister = getRegister(lowNibbleOnFirstByte);
+
+		switch(lastByte){
+
+			// Skips the next instruction if the key stored in VX is pressed. (Usually the next instruction is a jump to skip a code block)
+			// type: KeyOp
+			// template: 0xEX9E
+			// if(key()==Vx)
+			case 0x9E:
+				if(getKey() == *VXdynamicRegister){
+					skipNextInstruction();
+				}
+				break;
+
+			// 	Skips the next instruction if the key stored in VX isn't pressed. (Usually the next instruction is a jump to skip a code block)
+			// type: KeyOp
+			// template: EXA1
+			// if(key()!=Vx)
+			case 0xA1:
+				if(getKey() != *VXdynamicRegister){
+					skipNextInstruction();
+				}
+				break;
+
+			default:
+				instructionNotFound(opcode);
+				nextInstruction();
+		}
+	}
 
 	// F ////////////////////////////////////////////////
 
-	// Sets VX to the value of the delay timer.
-	// type: Timer
-	// template: FX07
-	// Vx = get_delay()
-	/*case 0xFX07:
+	else if( (0xF000 <= opcode) && (opcode <= 0xFFFF) ){
 		unsigned short opcodeClean = removeBase(opcode, 0xF000);
-		break;*/
 
-	// A key press is awaited, and then stored in VX. (Blocking Operation. All instruction halted until next key event)
-	// type: KeyOp
-	// template: FX0A
-	// Vx = get_key()
-	/*case 0xFX0A:
-		unsigned short opcodeClean = removeBase(opcode, 0xF000);
-		break;*/
+		// we match the instruction on the last byte
+		unsigned char lastByte = getLastByte(opcodeClean);
 
-	// Sets the delay timer to VX.
-	// type: Timer
-	// template: FX15
-	// delay_timer(Vx)
-	/*case 0xFX15:
-		unsigned short opcodeClean = removeBase(opcode, 0xF000);
-		break;*/
+		// get Vx
+		unsigned char lowNibbleOnFirstByte = getLowNibble(getFirstByte(opcodeClean));
+		unsigned char *VXdynamicRegister = getRegister(lowNibbleOnFirstByte);
 
-	// Sets the sound timer to VX.
-	// type: Sound
-	// template: FX18
-	// sound_timer(Vx)
-	/*case 0xFX18:
-		unsigned short opcodeClean = removeBase(opcode, 0xF000);
-		break;*/
+		switch(lastByte){
 
-	// Adds VX to I
-	// type: Memory
-	// template: FX1E
-	// I +=Vx
-	/*case 0xFX1E:
-		unsigned short opcodeClean = removeBase(opcode, 0xF000);
-		break;*/
+			// Sets VX to the value of the delay timer.
+			// type: Timer
+			// template: FX07
+			// Vx = get_delay()
+			case 0x07:
+				*VXdynamicRegister = getDelayTimer();
+				break;
 
-	// Sets I to the location of the sprite for the character in VX. Characters 0-F (in hexadecimal) are represented by a 4x5 font.
-	// type: Memory
-	// template: FX29
-	// I=sprite_addr[Vx]
-	/*case 0xFX29:
-		unsigned short opcodeClean = removeBase(opcode, 0xF000);
-		break;*/
+			// A key press is awaited, and then stored in VX. (Blocking Operation. All instruction halted until next key event)
+			// type: KeyOp
+			// template: FX0A
+			// Vx = get_key()
+			case 0x0A:
+				*VXdynamicRegister = getKey();
+				break;
 
-	// Stores the binary-coded decimal representation of VX, with the most significant of three digits at the address in I, the middle digit at I plus 1, and the least significant digit at I plus 2. (In other words, take the decimal representation of VX, place the hundreds digit in memory at location in I, the tens digit at location I+1, and the ones digit at location I+2.)
-	// type: BCD
-	// template: FX33
-	// set_BCD(Vx);
-	// *(I+0)=BCD(3);
-	// *(I+1)=BCD(2);
-	// *(I+2)=BCD(1);
-	/*case 0xFX33:
-		unsigned short opcodeClean = removeBase(opcode, 0xF000);
-		break;*/
+			// Sets the delay timer to VX.
+			// type: Timer
+			// template: FX15
+			// delay_timer(Vx)
+			case 0x15:
+				setDelayTimer(*VXdynamicRegister);
+				break;
 
-	// Stores V0 to VX (including VX) in memory starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.
-	// type: Memory
-	// template: FX55
-	// reg_dump(Vx,&I)
-	/*case 0xFX55:
-		unsigned short opcodeClean = removeBase(opcode, 0xF000);
-		break;*/
+			// Sets the sound timer to VX.
+			// type: Sound
+			// template: FX18
+			// sound_timer(Vx)
+			case 0x18:
+				setSoundTimer(*VXdynamicRegister);
+				break;
 
-	// Fills V0 to VX (including VX) with values from memory starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.
-	// type: Memory
-	// template: FX65
-	// reg_load(Vx,&I)
-	/*case 0xFX65:
-		unsigned short opcodeClean = removeBase(opcode, 0xF000);
-		break;*/
+			// Adds VX to I
+			// type: Memory
+			// template: FX1E
+			// I +=Vx
+			case 0x1E:
+				I += *VXdynamicRegister;
+				break;
+
+			// Sets I to the location of the sprite for the character in VX. Characters 0-F (in hexadecimal) are represented by a 4x5 font.
+			// type: Memory
+			// template: FX29
+			// I=sprite_addr[Vx]
+			case 0x29:
+				// TODO: !!!!!!!!!!!!!!
+				break;
+
+			// Stores the binary-coded decimal representation of VX, with the most significant of three digits at the address in I, the middle digit at I plus 1, and the least significant digit at I plus 2. (In other words, take the decimal representation of VX, place the hundreds digit in memory at location in I, the tens digit at location I+1, and the ones digit at location I+2.)
+			// type: BCD
+			// template: FX33
+			// set_BCD(Vx);
+			// *(I+0)=BCD(3);
+			// *(I+1)=BCD(2);
+			// *(I+2)=BCD(1);
+			case 0x33:
+				// TODO: !!!!!!!!!!!!!!
+				break;
+
+			// Stores V0 to VX (including VX) in memory starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.
+			// type: Memory
+			// template: FX55
+			// reg_dump(Vx,&I)
+			case 0x55:
+				// TODO: !!!!!!!!!!!!!!!
+				break;
+
+			// Fills V0 to VX (including VX) with values from memory starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.
+			// type: Memory
+			// template: FX65
+			// reg_load(Vx,&I)
+			case 0x65:
+				// TODO: !!!!!!!!!!!!!!!
+				break;
+
+			default:
+				instructionNotFound(opcode);
+		}
+
+		nextInstruction();
+	}
 
 	else {
-		printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
-		printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
-		printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
-		printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
-		printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
-		printf("Instruction not found at: %x with value of: %x\n", PC, opcode);
-		printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
-		printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
-		printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
-		printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
-		printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
-		PC += 0x2;
+		instructionNotFound(opcode);
 	}
 
 	DEBUG_printStack();
@@ -548,4 +591,32 @@ unsigned char getLastByte(unsigned short s){
 	// overflow should leave only what we want
 	unsigned char c = s;
 	return c;
+}
+
+void instructionNotFound(unsigned short opcode){
+	printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+	printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+	printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+	printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+	printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+	printf("Instruction NOT FOUND at: %x with value of: %x\n", PC, opcode);
+	printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+	printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+	printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+	printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+	printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+}
+
+void instructionNotImplemented(unsigned short opcode){
+	printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
+	printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
+	printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
+	printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
+	printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
+	printf("Instruction NOT IMPLEMENTED at: %x with value of: %x\n", PC, opcode);
+	printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
+	printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
+	printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
+	printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
+	printf("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
 }

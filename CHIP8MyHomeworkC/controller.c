@@ -1,1 +1,5 @@
-unsigned char key[16];
+unsigned char key;
+
+unsigned char getKey(){
+	return key;
+}

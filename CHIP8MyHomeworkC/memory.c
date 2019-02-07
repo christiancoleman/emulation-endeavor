@@ -21,9 +21,9 @@ unsigned short *SP; // stack pointer
 // Registers are 16 bits or 2 bytes long
 
 //unsigned int I = 0xFFFFFFFF; // ints are 4 bytes
-unsigned short I; // shorts are 2 bytes
-unsigned short PC; // programs start at 0x200
-unsigned char V0; // char is 1 byte
+unsigned short I; 	// shorts are 2 bytes
+unsigned short PC; 	// programs start at 0x200
+unsigned char V0; 	// char is 1 byte
 unsigned char V1;
 unsigned char V2;
 unsigned char V3;
@@ -38,7 +38,7 @@ unsigned char VB;
 unsigned char VC;
 unsigned char VD;
 unsigned char VE;
-unsigned char VF; // doubles as a flag (should be avoided)
+unsigned char VF; 	// doubles as a flag (should be avoided)
 
 void initMemory();
 unsigned char* getRegister(unsigned char);

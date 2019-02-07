@@ -33,6 +33,12 @@ void start(){
 	// Event handler
 	SDL_Event e;
 
+	printf("\n");
+	printf("######################################################\n");
+	printf("################ STARTING EMULATION ##################\n");
+	printf("######################################################\n");
+	printf("\n");
+
 	// While app is running
 	while( !quit ){
 		// Handle events on queue
