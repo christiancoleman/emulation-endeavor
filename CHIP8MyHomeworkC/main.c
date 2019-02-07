@@ -10,11 +10,6 @@
 
 int main(int arg, char * argv[]){
 
-	if(SDL_Init(SDL_INIT_EVERYTHING) < 0){
-		printf("Failed to start SDL\n");
-		return 0;
-	}
-
 	// memory.c
 	initMemory();
 
@@ -55,8 +50,6 @@ int main(int arg, char * argv[]){
 		0xDXYN – Draws a sprite on the screen
 		Line 28: If we press or release a key, we should store this state in the part that emulates the keypad
 	*/
-
-	SDL_Quit();
 
 	return 0;
 }
