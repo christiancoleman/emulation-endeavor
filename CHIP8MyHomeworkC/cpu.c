@@ -42,6 +42,9 @@ void doCycle(){
 
 	unsigned short opcode = getOpcode(PC);
 
+	// DEBUG
+	printf("PC: \t\t%x\n", PC);
+
 	// Special zero case #1
 	// Clears the screen.
 	// type: Display
@@ -377,7 +380,7 @@ void doCycle(){
 	// draw(Vx,Vy,N)
 	else if( (0xD000 <= opcode) && (opcode <= 0xDFFF) ){
 		unsigned short opcodeClean = removeBase(opcode, 0xD000);
-		draw();
+		//draw();
 		nextInstruction();
 	}
 
@@ -481,6 +484,7 @@ void doCycle(){
 			// I=sprite_addr[Vx]
 			case 0x29:
 				// TODO: !!!!!!!!!!!!!!
+				instructionNotImplemented(opcode);
 				break;
 
 			// Stores the binary-coded decimal representation of VX, with the most significant of three digits at the address in I, the middle digit at I plus 1, and the least significant digit at I plus 2. (In other words, take the decimal representation of VX, place the hundreds digit in memory at location in I, the tens digit at location I+1, and the ones digit at location I+2.)
@@ -492,6 +496,7 @@ void doCycle(){
 			// *(I+2)=BCD(1);
 			case 0x33:
 				// TODO: !!!!!!!!!!!!!!
+				instructionNotImplemented(opcode);
 				break;
 
 			// Stores V0 to VX (including VX) in memory starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.
@@ -500,6 +505,7 @@ void doCycle(){
 			// reg_dump(Vx,&I)
 			case 0x55:
 				// TODO: !!!!!!!!!!!!!!!
+				instructionNotImplemented(opcode);
 				break;
 
 			// Fills V0 to VX (including VX) with values from memory starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.
@@ -560,6 +566,7 @@ void call(unsigned short addr){
 
 void gotoAddr(unsigned short addr){
 	PC = addr;
+	nextInstruction();
 }
 
 void nextInstruction(){

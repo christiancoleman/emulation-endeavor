@@ -45,9 +45,7 @@ SDL_Renderer* renderer = NULL;
 
 void initGraphics();
 void loadFontSet();
-void startSDL();
 bool initSDL();
-bool loadMediaForSDL();
 void closeSDL();
 void clearScreen();
 void draw();
@@ -118,14 +116,6 @@ bool initSDL(){
 	return success;
 }
 
-bool loadMediaForSDL(){
-	// Loading success flag
-	bool success = true;
-
-	// Nothing to load
-	return success;
-}
-
 void closeSDL(){
 	// Destroy window
 	SDL_DestroyWindow(window);
@@ -137,6 +127,13 @@ void closeSDL(){
 
 void clearScreen(){
 	printf("\tClearing the screen...\n");
+
+	/*//Clear screen
+	SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0xFF, 0xFF );
+	SDL_RenderClear( renderer );
+
+	//Update screen
+	SDL_RenderPresent( renderer );*/
 }
 
 void draw(){
@@ -147,9 +144,9 @@ void draw(){
 	SDL_RenderClear( renderer );
 
 	//Render red filled quad
-	SDL_Rect fillRect = { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 };
+	/*SDL_Rect fillRect = { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 };
 	SDL_SetRenderDrawColor( renderer, 0xFF, 0x00, 0x00, 0xFF );
-	SDL_RenderFillRect( renderer, &fillRect );
+	SDL_RenderFillRect( renderer, &fillRect );*/
 
 	//Render green outlined quad
 	SDL_Rect outlineRect = { SCREEN_WIDTH / 6, SCREEN_HEIGHT / 6, SCREEN_WIDTH * 2 / 3, SCREEN_HEIGHT * 2 / 3 };
@@ -161,12 +158,11 @@ void draw(){
 	SDL_RenderDrawLine( renderer, 0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2 );
 
 	//Draw vertical line of yellow dots
-	SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0x00, 0xFF );
-	for( int i = 0; i < SCREEN_HEIGHT; i += 4 )
-	{
+	/*SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0x00, 0xFF );
+	for( int i = 0; i < SCREEN_HEIGHT; i += 4 )	{
 		SDL_RenderDrawPoint( renderer, SCREEN_WIDTH / 2, i );
 	}
-
+*/
 	//Update screen
 	SDL_RenderPresent( renderer );
 }

@@ -1,9 +1,3 @@
-//char c = 'z';
-//char d = 122;
-//char e = 0x7A;
-//char f = '\x7a';
-// ^ all of these are equal
-
 #pragma once
 
 /*
@@ -124,7 +118,7 @@ unsigned char* getRegister(unsigned char character){
 	else if(character == 0x0E){
 		return &VE;
 	}
-	else if(character == 0x01){
+	else if(character == 0x0F){
 		return &VF;
 	}
 }
@@ -171,23 +165,12 @@ void DEBUG_printState(unsigned short opcode){
 
 	printf("\nPress enter to continue stepping through the code...\n");
 	int d = getchar();
-
-	/*printf("\nPress i to step to the next instruction...\n");
-	printf("\nPress m to print memory...\n");
-
-	int c = getchar();
-	printf("c = %i\n", c);
-	if(c == 109){
-
-	}
-	else if(c == 231){
-
-	}*/
 }
 
 void DEBUG_printStack(){
 	printf("\n");
+	printf("~~~Stack~~~\n");
 	for(int i = 0; i < 16; i++){
-		printf("%x\n", stack[i]);
+		printf("stack[%i]: \t%x\n", i, stack[i]);
 	}
 }

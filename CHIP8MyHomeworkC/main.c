@@ -48,12 +48,6 @@ void start(){
 				quit = true;
 			}
 		}
-
-		// if timer?
-		// doCycle
-		// doDraw
-		// catchController
-
 		draw();
 		doCycle();
 	}
