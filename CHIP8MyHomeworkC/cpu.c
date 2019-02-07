@@ -100,7 +100,8 @@ void doCycle(){
 	}
 
 	// All 0x3*** cases are the same
-	// 	Skips the next instruction if VX equals NN. (Usually the next instruction is a jump to skip a code block)
+	// 	Skips the next instruction if VX equals NN. (Usually the next instruction is a jump to
+	// 		skip a code block)
 	// type: Condition
 	// template: 3XNN
 	// if(Vx!=NN)
@@ -122,7 +123,8 @@ void doCycle(){
 	}
 
 	// All 0x4*** cases are the same
-	// Skips the next instruction if VX doesn't equal NN. (Usually the next instruction is a jump to skip a code block)
+	// Skips the next instruction if VX doesn't equal NN. (Usually the next instruction is a
+	// 		jump to skip a code block)
 	// type: Condition
 	// template: 4XNN
 	// if(Vx==NN)
@@ -144,14 +146,16 @@ void doCycle(){
 	}
 
 	// All 0x5*** cases are the same
-	// Skips the next instruction if VX equals VY. (Usually the next instruction is a jump to skip a code block)
+	// Skips the next instruction if VX equals VY. (Usually the next instruction is a jump
+	// 		to skip a code block)
 	// type: Condition
 	// template: 5XY0
 	// if(Vx!=Vy)
 	else if( (0x5000 <= opcode) && (opcode <= 0x5FFF) ){
 		unsigned short opcodeClean = removeBase(opcode, 0x5000);
 
-		// get last byte (usually NN but that's not needed for this operation but is needed for lowNibble)
+		// get last byte (usually NN but that's not needed for this operation but is needed
+		// 		for lowNibble)
 		unsigned char lastByte = getLastByte(opcodeClean);
 
 		// get Vx
@@ -267,7 +271,8 @@ void doCycle(){
 				*VXdynamicRegister += *VYdynamicRegister;
 				break;
 
-			// VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
+			// VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when
+			// 		there isn't.
 			// type: Math
 			// template: 8XY5
 			// Vx -= Vy
@@ -283,7 +288,8 @@ void doCycle(){
 				*VXdynamicRegister >>= 1;
 				break;
 
-			// Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
+			// Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there
+			// 		isn't.
 			// type: Math
 			// template: 8XY7
 			// Vx=Vy-Vx
@@ -307,7 +313,8 @@ void doCycle(){
 	}
 
 	// All 0x9*** cases are the same
-	// Skips the next instruction if VX doesn't equal VY. (Usually the next instruction is a jump to skip a code block)
+	// Skips the next instruction if VX doesn't equal VY. (Usually the next instruction
+	// 		is a jump to skip a code block)
 	// type: Condition
 	// template: 9XY0
 	// if(Vx==Vy)
@@ -354,7 +361,8 @@ void doCycle(){
 	}
 
 	// All 0xC*** cases are the same
-	// Sets VX to the result of a bitwise and operation on a random number (Typically: 0 to 255) and NN.
+	// Sets VX to the result of a bitwise and operation on a random number (Typically:
+	// 		0 to 255) and NN.
 	// type: Random
 	// template: CXNN
 	// Vx=rand()&NN
@@ -374,13 +382,33 @@ void doCycle(){
 	}
 
 	// All 0xD*** cases are the same
-	// Draws a sprite at coordinate (VX, VY) that has a width of 8 pixels and a height of N pixels. Each row of 8 pixels is read as bit-coded starting from memory location I; I value doesn’t change after the execution of this instruction. As described above, VF is set to 1 if any screen pixels are flipped from set to unset when the sprite is drawn, and to 0 if that doesn’t happen
+	// Draws a sprite at coordinate (VX, VY) that has a width of 8 pixels and a height
+	// 		of N pixels. Each row of 8 pixels is read as bit-coded starting from memory
+	// 		location I; I value doesn’t change after the execution of this instruction.
+	// 		As described above, VF is set to 1 if any screen pixels are flipped from
+	// 		set to unset when the sprite is drawn, and to 0 if that doesn’t happen
 	// type: Display
 	// template: DXYN
 	// draw(Vx,Vy,N)
 	else if( (0xD000 <= opcode) && (opcode <= 0xDFFF) ){
 		unsigned short opcodeClean = removeBase(opcode, 0xD000);
-		//draw();
+
+		// get last byte (usually NN but that's not needed for this operation but is needed for lowNibble)
+		unsigned char lastByte = getLastByte(opcodeClean);
+
+		// get N
+		unsigned char lowNibbleOnSecondByte = getLowNibble(lastByte);
+
+		// get Vx
+		unsigned char lowNibbleOnFirstByte = getLowNibble(getFirstByte(opcodeClean));
+		unsigned char *VXdynamicRegister = getRegister(lowNibbleOnFirstByte);
+
+		// get Vy
+		unsigned char highNibbleOnSecondByte = getHighNibble(lastByte);
+		unsigned char *VYdynamicRegister = getRegister(highNibbleOnSecondByte);
+
+		draw(*VXdynamicRegister, *VYdynamicRegister, lowNibbleOnSecondByte);
+
 		nextInstruction();
 	}
 
@@ -398,7 +426,8 @@ void doCycle(){
 
 		switch(lastByte){
 
-			// Skips the next instruction if the key stored in VX is pressed. (Usually the next instruction is a jump to skip a code block)
+			// Skips the next instruction if the key stored in VX is pressed. (Usually
+			// 		the next instruction is a jump to skip a code block)
 			// type: KeyOp
 			// template: 0xEX9E
 			// if(key()==Vx)
@@ -408,7 +437,8 @@ void doCycle(){
 				}
 				break;
 
-			// 	Skips the next instruction if the key stored in VX isn't pressed. (Usually the next instruction is a jump to skip a code block)
+			// 	Skips the next instruction if the key stored in VX isn't pressed.
+			// 		(Usually the next instruction is a jump to skip a code block)
 			// type: KeyOp
 			// template: EXA1
 			// if(key()!=Vx)
@@ -446,7 +476,8 @@ void doCycle(){
 				*VXdynamicRegister = getDelayTimer();
 				break;
 
-			// A key press is awaited, and then stored in VX. (Blocking Operation. All instruction halted until next key event)
+			// A key press is awaited, and then stored in VX. (Blocking Operation. All
+			// 		instruction halted until next key event)
 			// type: KeyOp
 			// template: FX0A
 			// Vx = get_key()
@@ -478,16 +509,22 @@ void doCycle(){
 				I += *VXdynamicRegister;
 				break;
 
-			// Sets I to the location of the sprite for the character in VX. Characters 0-F (in hexadecimal) are represented by a 4x5 font.
+			// Sets I to the location of the sprite for the character in VX. Characters 0-F
+			// 		(in hexadecimal) are represented by a 4x5 font.
 			// type: Memory
 			// template: FX29
 			// I=sprite_addr[Vx]
 			case 0x29:
 				// TODO: !!!!!!!!!!!!!!
 				instructionNotImplemented(opcode);
+				//I =
 				break;
 
-			// Stores the binary-coded decimal representation of VX, with the most significant of three digits at the address in I, the middle digit at I plus 1, and the least significant digit at I plus 2. (In other words, take the decimal representation of VX, place the hundreds digit in memory at location in I, the tens digit at location I+1, and the ones digit at location I+2.)
+			// Stores the binary-coded decimal representation of VX, with the most significant
+			// 		of three digits at the address in I, the middle digit at I plus 1, and
+			// 		the least significant digit at I plus 2. (In other words, take the decimal
+			// 		representation of VX, place the hundreds digit in memory at location in I,
+			// 		 the tens digit at location I+1, and the ones digit at location I+2.)
 			// type: BCD
 			// template: FX33
 			// set_BCD(Vx);
@@ -499,7 +536,8 @@ void doCycle(){
 				instructionNotImplemented(opcode);
 				break;
 
-			// Stores V0 to VX (including VX) in memory starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.
+			// Stores V0 to VX (including VX) in memory starting at address I. The offset from
+			// 		I is increased by 1 for each value written, but I itself is left unmodified.
 			// type: Memory
 			// template: FX55
 			// reg_dump(Vx,&I)
@@ -508,7 +546,9 @@ void doCycle(){
 				instructionNotImplemented(opcode);
 				break;
 
-			// Fills V0 to VX (including VX) with values from memory starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.
+			// Fills V0 to VX (including VX) with values from memory starting at address I.
+			// 		The offset from I is increased by 1 for each value written, but I itself
+			// 		is left unmodified.
 			// type: Memory
 			// template: FX65
 			// reg_load(Vx,&I)
@@ -527,8 +567,8 @@ void doCycle(){
 		instructionNotFound(opcode);
 	}
 
-	DEBUG_printStack();
-	DEBUG_printState(opcode);
+	//DEBUG_printStack();
+	//DEBUG_printState(opcode);
 
 }
 

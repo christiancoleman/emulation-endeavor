@@ -3,17 +3,27 @@
 #include "memory.c"
 #include "SDL2/SDL.h"
 
-// graphics in this system are either black or white
-// we can symbolize this via a 1 or 2
-
-//#define SCREEN_WIDTH 256
-//#define SCREEN_HEIGHT 128
-#define SCREEN_WIDTH 640
-#define SCREEN_HEIGHT 480
-#define IMAGE_TO_LOAD "hello_world.bmp"
+#define SCALE 10
+#define SCREEN_WIDTH 64*SCALE
+#define SCREEN_HEIGHT 32*SCALE
 
 unsigned char gfx[SCREEN_WIDTH * SCREEN_HEIGHT]; // 64*32 = 2,048
 
+/*
+
+****		11110000	0xF0
+*  *		10010000	0x90
+*  *		10010000	0x90
+*  *		10010000	0x90
+****		11110000	0xF0
+
+****		11110000	0xF0
+   *		00010000	0x10
+****		11110000	0xF0
+*   		10000000	0x80
+****		11110000	0xF0
+
+*/
 unsigned char chip8_fontset[80] = {
 	0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
 	0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -48,7 +58,8 @@ void loadFontSet();
 bool initSDL();
 void closeSDL();
 void clearScreen();
-void draw();
+void draw(int, int, int);
+void drawD();
 
 //////////////////////////////////////
 //implementations
@@ -91,7 +102,8 @@ bool initSDL(){
 		window = SDL_CreateWindow("CHIP8MyHomework",
 			SDL_WINDOWPOS_UNDEFINED,
 			SDL_WINDOWPOS_UNDEFINED,
-			SCREEN_WIDTH, SCREEN_HEIGHT,
+			SCREEN_WIDTH,
+			SCREEN_HEIGHT,
 			SDL_WINDOW_SHOWN
 		);
 
@@ -126,22 +138,18 @@ void closeSDL(){
 }
 
 void clearScreen(){
-	printf("\tClearing the screen...\n");
-
-	/*//Clear screen
+	// Clear screen
 	SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0xFF, 0xFF );
 	SDL_RenderClear( renderer );
 
-	//Update screen
-	SDL_RenderPresent( renderer );*/
+	// Update screen
+	SDL_RenderPresent( renderer );
 }
 
-void draw(){
-	printf("\t~~~ DRAWING ~~~\n");
-
+//void draw(int x1, int y1, int x2, int y2){
 	//Clear screen
-	SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0xFF, 0xFF );
-	SDL_RenderClear( renderer );
+	//SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0xFF, 0xFF );
+	//SDL_RenderClear( renderer );
 
 	//Render red filled quad
 	/*SDL_Rect fillRect = { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 };
@@ -149,20 +157,43 @@ void draw(){
 	SDL_RenderFillRect( renderer, &fillRect );*/
 
 	//Render green outlined quad
-	SDL_Rect outlineRect = { SCREEN_WIDTH / 6, SCREEN_HEIGHT / 6, SCREEN_WIDTH * 2 / 3, SCREEN_HEIGHT * 2 / 3 };
-	SDL_SetRenderDrawColor( renderer, 0x00, 0xFF, 0x00, 0xFF );
-	SDL_RenderDrawRect( renderer, &outlineRect );
-
-	//Draw blue horizontal line
-	SDL_SetRenderDrawColor( renderer, 0x00, 0x00, 0xFF, 0xFF );
-	SDL_RenderDrawLine( renderer, 0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2 );
+	//SDL_Rect outlineRect = { SCREEN_WIDTH / 6, SCREEN_HEIGHT / 6, SCREEN_WIDTH * 2 / 3, SCREEN_HEIGHT * 2 / 3 };
+	//SDL_SetRenderDrawColor( renderer, 0x00, 0xFF, 0x00, 0xFF );
+	//SDL_RenderDrawRect( renderer, &outlineRect );
 
 	//Draw vertical line of yellow dots
 	/*SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0x00, 0xFF );
 	for( int i = 0; i < SCREEN_HEIGHT; i += 4 )	{
 		SDL_RenderDrawPoint( renderer, SCREEN_WIDTH / 2, i );
 	}
-*/
+	*/
+
+	//Update screen
+	//SDL_RenderPresent( renderer );
+//}
+
+void draw(int x, int y, int height){
+	//Clear screen
+	SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0xFF, 0xFF );
+	SDL_RenderClear( renderer );
+
+	int x1 = x;
+	int x2 = x + 8;
+	int y1 = y;
+	int y2 = y + 8;
+
+	// draw sprite
+	SDL_SetRenderDrawColor( renderer, 0x00, 0x00, 0xF0, 0xF0 );
+	for(int i = 0; i < height; i++){
+		SDL_RenderDrawLine(
+			renderer,
+			( x1+i ),
+			( y1+i ),
+			( x2+i ),
+			( y2+i )
+		);
+	}
+
 	//Update screen
 	SDL_RenderPresent( renderer );
 }

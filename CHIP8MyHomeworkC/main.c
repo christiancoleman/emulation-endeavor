@@ -48,7 +48,6 @@ void start(){
 				quit = true;
 			}
 		}
-		draw();
 		doCycle();
 	}
 
