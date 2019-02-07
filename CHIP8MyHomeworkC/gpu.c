@@ -36,10 +36,8 @@ unsigned char chip8_fontset[80] = {
 // The window we'll be rendering to
 SDL_Window* window = NULL;
 
-// The surface contained by the window
-SDL_Surface* screenSurface = NULL;
-
-SDL_Surface* helloWorld = NULL;
+// The window renderer
+SDL_Renderer* renderer = NULL;
 
 //////////////////////////////////////
 // declarations
@@ -86,16 +84,55 @@ void startSDL(){
 			printf("Failed to load the media!\n");
 		}
 		else {
-			// Apply the image
-			SDL_BlitSurface( helloWorld, NULL, screenSurface, NULL );
+			// Main loop flag
+			bool quit = false;
 
-			// Update the surface
-			SDL_UpdateWindowSurface( window );
+			// Event handler
+			SDL_Event e;
 
-			// Wait two seconds
-			SDL_Delay(2000);
+			// While app is running
+			while( !quit ){
+				//Handle events on queue
+				while(SDL_PollEvent( &e ) != 0){
+					//User requests quit
+					if( e.type == SDL_QUIT ){
+						quit = true;
+					}
+				}
+
+				//Clear screen
+				SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0xFF, 0xFF );
+				SDL_RenderClear( renderer );
+
+				//Render red filled quad
+				SDL_Rect fillRect = { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 };
+				SDL_SetRenderDrawColor( renderer, 0xFF, 0x00, 0x00, 0xFF );
+				SDL_RenderFillRect( renderer, &fillRect );
+
+				//Render green outlined quad
+				SDL_Rect outlineRect = { SCREEN_WIDTH / 6, SCREEN_HEIGHT / 6, SCREEN_WIDTH * 2 / 3, SCREEN_HEIGHT * 2 / 3 };
+				SDL_SetRenderDrawColor( renderer, 0x00, 0xFF, 0x00, 0xFF );
+				SDL_RenderDrawRect( renderer, &outlineRect );
+
+				//Draw blue horizontal line
+				SDL_SetRenderDrawColor( renderer, 0x00, 0x00, 0xFF, 0xFF );
+				SDL_RenderDrawLine( renderer, 0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2 );
+
+				//Draw vertical line of yellow dots
+				SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0x00, 0xFF );
+				for( int i = 0; i < SCREEN_HEIGHT; i += 4 )
+				{
+					SDL_RenderDrawPoint( renderer, SCREEN_WIDTH / 2, i );
+				}
+
+				//Update screen
+				SDL_RenderPresent( renderer );
+			}
 		}
 	}
+
+	// Free resources and close SDL
+	closeSDL();
 }
 
 bool init(){
@@ -108,6 +145,10 @@ bool init(){
 		success = false;
 	}
 	else {
+		if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" ) );{
+			printf("Warning: Linear texture filtering not enabled!\n");
+		}
+
 		// Create window
 		window = SDL_CreateWindow("CHIP8MyHomework",
 			SDL_WINDOWPOS_UNDEFINED,
@@ -115,23 +156,22 @@ bool init(){
 			SCREEN_WIDTH, SCREEN_HEIGHT,
 			SDL_WINDOW_SHOWN
 		);
+
 		if( window == NULL ){
 			printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
 			success = false;
 		}
 		else {
-			// Get window surface
-			screenSurface = SDL_GetWindowSurface(window);
-
-			/*// Fill the surface with color (white is 0xFF, 0xFF, 0xFF)
-			SDL_FillRect( screenSurface, NULL, SDL_MapRGB( screenSurface->format, 0xFF, 0xFF, 0xFF ) );
-
-			// Update the surface
-			// "An important thing to know about rendering is that just because you've drawn something to the screen surface doesn't mean you'll see it. After you've done all your drawing you need to update the window so it shows everything you drew. A call to SDL_UpdateWindowSurface will do this."
-			SDL_UpdateWindowSurface(window);
-
-			// Wait two seconds
-			SDL_Delay( 2000 );*/
+			// Create renderer for window
+			renderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED );
+			if(renderer == NULL){
+				printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
+				success = false;
+			}
+			else {
+				// Initialize rendered color
+				SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0xFF, 0xFF );
+			}
 		}
 	}
 
@@ -142,21 +182,11 @@ bool loadMedia(){
 	// Loading success flag
 	bool success = true;
 
-	// Load splash image
-	helloWorld = SDL_LoadBMP( IMAGE_TO_LOAD );
-	if(helloWorld == NULL){
-		printf("Unable to load image %s! SDL_Error: %s\n", IMAGE_TO_LOAD, SDL_GetError());
-		success = false;
-	}
-
+	// Nothing to load
 	return success;
 }
 
 void closeSDL(){
-	// Deallocate surface
-	SDL_FreeSurface(helloWorld);
-	helloWorld = NULL;
-
 	// Destroy window
 	SDL_DestroyWindow(window);
 	window = NULL;
