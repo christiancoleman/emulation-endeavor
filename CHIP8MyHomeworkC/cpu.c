@@ -221,10 +221,9 @@ void startEmulation(){
 
 		// 8 ////////////////////////////////////////////////
 
-		// TODO: COME BACK TO THIS
-		/*else if( (0x8000 <= opcode) && (opcode <= 0x8FFF) ){
-			unsigned short opcodeClean = removeBase(opcode, 0x7000);
-		}*/
+		else if( (0x8000 <= opcode) && (opcode <= 0x8FFF) ){
+			unsigned short opcodeClean = removeBase(opcode, 0x8000);
+		}
 
 		// Sets VX to the value of VY.
 		// type: Assign
