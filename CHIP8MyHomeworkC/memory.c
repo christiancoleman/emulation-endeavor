@@ -57,8 +57,8 @@ void initMemory(){
 
 	key = 0x00;
 
-	DT = 0x00; 	// might want to set these to 60 or 0x3C
-	ST = 0x00;
+	DT = 0x3C; 	// might want to set these to 60 or 0x3C
+	ST = 0x3C;
 
 	PC = 0x0200; // This is the entry point for all CHIP-8 roms
 	V0 = 0x00;
@@ -133,8 +133,34 @@ unsigned char* getRegister(unsigned char character){
 }
 
 void DEBUG_printMemory(){
-	for(int i = 0; i < 4096; i++){
+	for(int i = 0; i < 1024; i++){
+		// first 8
 		printf("0x%x: 0x%x \t", i, memory[i]);
+		i++;
+		printf("0x%x: 0x%x\t", i, memory[i]);
+		i++;
+		printf("0x%x: 0x%x\t", i, memory[i]);
+		i++;
+		printf("0x%x: 0x%x\t", i, memory[i]);
+		i++;
+		printf("0x%x: 0x%x\t", i, memory[i]);
+		i++;
+		printf("0x%x: 0x%x\t", i, memory[i]);
+		i++;
+		printf("0x%x: 0x%x\t", i, memory[i]);
+		i++;
+		printf("0x%x: 0x%x \t", i, memory[i]);
+		i++;
+		// next 8
+		printf("0x%x: 0x%x\t", i, memory[i]);
+		i++;
+		printf("0x%x: 0x%x\t", i, memory[i]);
+		i++;
+		printf("0x%x: 0x%x\t", i, memory[i]);
+		i++;
+		printf("0x%x: 0x%x\t", i, memory[i]);
+		i++;
+		printf("0x%x: 0x%x\t", i, memory[i]);
 		i++;
 		printf("0x%x: 0x%x\t", i, memory[i]);
 		i++;
@@ -153,7 +179,13 @@ void DEBUG_printState(unsigned short opcode){
 	printf("SP*: \t\t%x\n", *SP);
 	printf("\n");
 	printf("PC: \t\t%x\n", PC);
+	printf("\n");
 	printf("I: \t\t%x\n", I);
+	printf("\n");
+	printf("key: \t\t%x\n", key);
+	printf("\n");
+	printf("DT: \t\t%x\n", DT);
+	printf("ST: \t\t%x\n", ST);
 	printf("\n");
 	printf("V0: \t\t%x\n", V0);
 	printf("V1: \t\t%x\n", V1);

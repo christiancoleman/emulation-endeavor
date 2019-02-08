@@ -14,7 +14,7 @@ int main(int arg, char * argv[]){
 	// memory.c
 	initMemory();
 
-	// gou.c
+	// gpu.c
 	initGraphics();
 
 	// rom.c

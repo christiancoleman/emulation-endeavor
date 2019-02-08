@@ -12,7 +12,7 @@
 #include "memory.c"
 #include "gpu.c"
 
-#define IS_DEBUG true
+#define IS_DEBUG false
 
 unsigned short getOpcode(int);
 void doCycle();
@@ -38,12 +38,14 @@ unsigned short getOpcode(int index){
 }
 
 void doCycle(){
-	printf("#################################################\n");
-
 	unsigned short opcode = getOpcode(PC);
 
 	// DEBUG
-	printf("PC: \t\t%x\n", PC);
+	#if IS_DEBUG
+	printf("#################################################\n");
+	DEBUG_printMemory();
+	printf("\nPC: \t\t%x\n", PC);
+	#endif
 
 	// Special zero case #1
 	// Clears the screen.
@@ -407,7 +409,7 @@ void doCycle(){
 		unsigned char highNibbleOnSecondByte = getHighNibble(lastByte);
 		unsigned char *VYdynamicRegister = getRegister(highNibbleOnSecondByte);
 
-		draw(*VXdynamicRegister, *VYdynamicRegister, lowNibbleOnSecondByte);
+		draw(memory[*VXdynamicRegister], memory[*VYdynamicRegister], lowNibbleOnSecondByte);
 
 		nextInstruction();
 	}
@@ -515,9 +517,7 @@ void doCycle(){
 			// template: FX29
 			// I=sprite_addr[Vx]
 			case 0x29:
-				// TODO: !!!!!!!!!!!!!!
-				instructionNotImplemented(opcode);
-				//I =
+				I = memory[*VXdynamicRegister];
 				break;
 
 			// Stores the binary-coded decimal representation of VX, with the most significant
@@ -532,8 +532,11 @@ void doCycle(){
 			// *(I+1)=BCD(2);
 			// *(I+2)=BCD(1);
 			case 0x33:
-				// TODO: !!!!!!!!!!!!!!
-				instructionNotImplemented(opcode);
+				printf("TESTING!!!!");
+				for(int i = 0; i <= lowNibbleOnFirstByte; i++){
+					unsigned char *VtempDynamicRegister = getRegister(lowNibbleOnFirstByte);
+					printf("lowNibbleOnFirstByte: %x", lowNibbleOnFirstByte);
+				}
 				break;
 
 			// Stores V0 to VX (including VX) in memory starting at address I. The offset from
@@ -542,8 +545,11 @@ void doCycle(){
 			// template: FX55
 			// reg_dump(Vx,&I)
 			case 0x55:
-				// TODO: !!!!!!!!!!!!!!!
-				instructionNotImplemented(opcode);
+				printf("TESTING!!!!");
+				for(int i = 0; i <= lowNibbleOnFirstByte; i++){
+					unsigned char *VtempDynamicRegister = getRegister(lowNibbleOnFirstByte);
+					printf("lowNibbleOnFirstByte: %x", lowNibbleOnFirstByte);
+				}
 				break;
 
 			// Fills V0 to VX (including VX) with values from memory starting at address I.
@@ -553,7 +559,11 @@ void doCycle(){
 			// template: FX65
 			// reg_load(Vx,&I)
 			case 0x65:
-				// TODO: !!!!!!!!!!!!!!!
+				printf("TESTING!!!!");
+				for(int i = 0; i <= lowNibbleOnFirstByte; i++){
+					unsigned char *VtempDynamicRegister = getRegister(lowNibbleOnFirstByte);
+					printf("lowNibbleOnFirstByte: %x", lowNibbleOnFirstByte);
+				}
 				break;
 
 			default:
@@ -571,6 +581,19 @@ void doCycle(){
 	DEBUG_printStack();
 	DEBUG_printState(opcode);
 	#endif
+
+	// Update timers
+	// Update timers
+	if(DT > 0) {
+		--DT;
+	}
+
+	if(ST > 0){
+		if(ST == 1){
+			printf("BEEP!\n");
+		}
+		--ST;
+	}
 
 }
 

@@ -7,7 +7,7 @@
 #define SCREEN_WIDTH 64*SCALE
 #define SCREEN_HEIGHT 32*SCALE
 
-unsigned char gfx[SCREEN_WIDTH * SCREEN_HEIGHT]; // 64*32 = 2,048
+unsigned char gfx[SCREEN_WIDTH * SCREEN_HEIGHT];
 
 /*
 
