@@ -11,8 +11,8 @@
 
 #include "memory.c"
 #include "gpu.c"
-#include "controller.c"
-#include "timers.c"
+
+#define IS_DEBUG true
 
 unsigned short getOpcode(int);
 void doCycle();
@@ -432,7 +432,7 @@ void doCycle(){
 			// template: 0xEX9E
 			// if(key()==Vx)
 			case 0x9E:
-				if(getKey() == *VXdynamicRegister){
+				if(key == *VXdynamicRegister){
 					skipNextInstruction();
 				}
 				break;
@@ -443,7 +443,7 @@ void doCycle(){
 			// template: EXA1
 			// if(key()!=Vx)
 			case 0xA1:
-				if(getKey() != *VXdynamicRegister){
+				if(key != *VXdynamicRegister){
 					skipNextInstruction();
 				}
 				break;
@@ -473,7 +473,7 @@ void doCycle(){
 			// template: FX07
 			// Vx = get_delay()
 			case 0x07:
-				*VXdynamicRegister = getDelayTimer();
+				*VXdynamicRegister = DT;
 				break;
 
 			// A key press is awaited, and then stored in VX. (Blocking Operation. All
@@ -482,7 +482,7 @@ void doCycle(){
 			// template: FX0A
 			// Vx = get_key()
 			case 0x0A:
-				*VXdynamicRegister = getKey();
+				*VXdynamicRegister = key;
 				break;
 
 			// Sets the delay timer to VX.
@@ -490,7 +490,7 @@ void doCycle(){
 			// template: FX15
 			// delay_timer(Vx)
 			case 0x15:
-				setDelayTimer(*VXdynamicRegister);
+				DT = *VXdynamicRegister;
 				break;
 
 			// Sets the sound timer to VX.
@@ -498,7 +498,7 @@ void doCycle(){
 			// template: FX18
 			// sound_timer(Vx)
 			case 0x18:
-				setSoundTimer(*VXdynamicRegister);
+				ST = *VXdynamicRegister;
 				break;
 
 			// Adds VX to I
@@ -567,8 +567,10 @@ void doCycle(){
 		instructionNotFound(opcode);
 	}
 
+	#if IS_DEBUG
 	DEBUG_printStack();
 	DEBUG_printState(opcode);
+	#endif
 
 }
 

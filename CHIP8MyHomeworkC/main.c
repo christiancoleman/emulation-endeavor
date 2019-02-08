@@ -4,7 +4,6 @@
 #include "memory.c"
 #include "cpu.c"
 #include "gpu.c"
-#include "timers.c"
 #include "rom.c"
 #include "SDL2/SDL.h"
 

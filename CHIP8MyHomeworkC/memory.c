@@ -12,12 +12,15 @@ unsigned char *memory;
 unsigned short *stack;
 unsigned short *SP; // stack pointer
 
+unsigned short I; 	// index register
 
+unsigned char key; 	// which key is pressed
 
-//unsigned int I = 0xFFFFFFFF; // ints are 4 bytes
-unsigned short I; 	// shorts are 2 bytes
+unsigned char DT; 	// delay timer
+unsigned char ST; 	// sound timer
+
 unsigned short PC; 	// programs start at 0x200
-unsigned char V0; 	// char is 1 byte
+unsigned char V0;
 unsigned char V1;
 unsigned char V2;
 unsigned char V3;
@@ -50,8 +53,14 @@ void initMemory(){
 	stack = calloc( ( 16 + 1 ), sizeof(unsigned short) );
 	SP = stack;
 
-	PC = 0x0200; // This is the entry point for all CHIP-8 roms
 	I = 0x0000;
+
+	key = 0x00;
+
+	DT = 0x00; 	// might want to set these to 60 or 0x3C
+	ST = 0x00;
+
+	PC = 0x0200; // This is the entry point for all CHIP-8 roms
 	V0 = 0x00;
 	V1 = 0x00;
 	V2 = 0x00;
