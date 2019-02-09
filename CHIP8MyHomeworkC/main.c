@@ -59,8 +59,8 @@ void start(){
 
 bool runTests(){
 	if(testOpcodes()){
-		printf("Tests have passed!\n");
+		printf("Tests have passed!\n\n");
 	} else {
-		printf("Tests have failed!\n");
+		printf("Tests have failed!\n\n");
 	}
 }

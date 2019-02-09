@@ -269,7 +269,13 @@ void doCycle(){
 			// type: Math
 			// template: 8XY4
 			// Vx += Vy
-			case 0x4:
+			case 0x4: ; // <-https://stackoverflow.com/questions/18496282/why-do-i-get-a-label-can-only-be-part-of-a-statement-and-a-declaration-is-not-a
+				unsigned short result = (*VXdynamicRegister) + (*VYdynamicRegister);
+				if(result > 0xFF){
+					VF = 0x1;
+				} else {
+					VF = 0x0;
+				}
 				*VXdynamicRegister += *VYdynamicRegister;
 				break;
 
