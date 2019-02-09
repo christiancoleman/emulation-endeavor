@@ -182,7 +182,7 @@ bool test2NNN(){
 }
 
 bool test3XNN_Vx_DNE_NN_NOSKIP(){
-	char* OP_NAME = "3NNN: ";
+	char* OP_NAME = "3XNN_Vx_DNE_NN_NOSKIP: ";
 	initMemory();
 
 	// test conditions
@@ -202,7 +202,7 @@ bool test3XNN_Vx_DNE_NN_NOSKIP(){
 }
 
 bool test3XNN_Vx_EQUALS_NN_SKIP(){
-	char* OP_NAME = "3NNN: ";
+	char* OP_NAME = "3XNN_Vx_EQUALS_NN_SKIP: ";
 	initMemory();
 
 	// test conditions
@@ -224,7 +224,7 @@ bool test3XNN_Vx_EQUALS_NN_SKIP(){
 }
 
 bool test4XNN_Vx_DNE_NN_SKIP(){
-	char* OP_NAME = "3NNN: ";
+	char* OP_NAME = "4XNN_Vx_DNE_NN_SKIP: ";
 	initMemory();
 
 	// test conditions
@@ -244,7 +244,7 @@ bool test4XNN_Vx_DNE_NN_SKIP(){
 }
 
 bool test4XNN_Vx_EQUALS_NN_NOSKIP(){
-	char* OP_NAME = "3NNN: ";
+	char* OP_NAME = "4XNN_Vx_EQUALS_NN_NOSKIP: ";
 	initMemory();
 
 	// test conditions
@@ -252,6 +252,52 @@ bool test4XNN_Vx_EQUALS_NN_NOSKIP(){
 	memory[PC] = 0x49;
 	memory[PC + 1] = 0x66;
 
+	V9 = 0x66;
+
+	// RUN TEST!
+	doCycle();
+
+	// check PC
+	if(PC != 0x202) {
+		printf("%s PC - FAIL\n", OP_NAME);
+		return false;
+	}
+	return true;
+}
+
+bool test5XY0_VX_EQUALS_VY_SKIP(){
+	char* OP_NAME = "5XY0_VX_EQUALS_VY_SKIP: ";
+	initMemory();
+
+	// test conditions
+	PC = 0x200;
+	memory[PC] = 0x59;
+	memory[PC + 1] = 0x60;
+
+	V6 = 0x66;
+	V9 = 0x66;
+
+	// RUN TEST!
+	doCycle();
+
+	// check PC
+	if(PC != 0x204) {
+		printf("%s PC - FAIL\n", OP_NAME);
+		return false;
+	}
+	return true;
+}
+
+bool test5XY0_VX_DNE_VY_NOSKIP(){
+	char* OP_NAME = "5XY0_VX_DNE_VY_NOSKIP: ";
+	initMemory();
+
+	// test conditions
+	PC = 0x200;
+	memory[PC] = 0x59;
+	memory[PC + 1] = 0x60;
+
+	V6 = 0x99;
 	V9 = 0x66;
 
 	// RUN TEST!
