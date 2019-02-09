@@ -7,7 +7,7 @@
 #define SCREEN_WIDTH 64*SCALE
 #define SCREEN_HEIGHT 32*SCALE
 
-unsigned char gfx[SCREEN_WIDTH * SCREEN_HEIGHT];
+unsigned char gfx[SCREEN_WIDTH][SCREEN_HEIGHT];
 
 /*
 
@@ -182,9 +182,12 @@ void draw(int x, int y, int height){
 	int y1 = y;
 	int y2 = y + 8;
 
-	// draw sprite
+	// set color
 	SDL_SetRenderDrawColor( renderer, 0x00, 0x00, 0xF0, 0xF0 );
+
+	// for the height we want to draw the same line
 	for(int i = 0; i < height; i++){
+
 		SDL_RenderDrawLine(
 			renderer,
 			( x1+i ),
@@ -192,7 +195,10 @@ void draw(int x, int y, int height){
 			( x2+i ),
 			( y2+i )
 		);
+
 	}
+
+	//SDL_RenderDrawPoint( renderer, x, y );
 
 	//Update screen
 	SDL_RenderPresent( renderer );

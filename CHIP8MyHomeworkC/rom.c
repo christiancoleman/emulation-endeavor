@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 //char * ROM_NAME = "_TETRIS";
-char * ROM_NAME = "_BC_Test";
+char * ROM_NAME = "_TETRIS";
 
 void loadRom();
 int getSizeOfFile(FILE*);

@@ -5,11 +5,21 @@
 #include "cpu.c"
 #include "gpu.c"
 #include "rom.c"
+#include "tests.c"
 #include "SDL2/SDL.h"
 
 void start();
+bool runTests();
 
-int main(int arg, char * argv[]){
+int main(int argc, char * argv[]){
+
+	printf("%s\n", argv[0]);
+	printf("%s\n", argv[1]);
+	if(argc > 1 && strcmp(argv[1], "-runtests") == 0){
+		runTests();
+		return 0;
+	}
+	printf("made it here at least");
 
 	// memory.c
 	initMemory();
@@ -20,7 +30,6 @@ int main(int arg, char * argv[]){
 	// rom.c
 	loadRom();
 
-	// below
 	start();
 
 	return 0;
@@ -31,12 +40,6 @@ void start(){
 
 	// Event handler
 	SDL_Event e;
-
-	printf("\n");
-	printf("######################################################\n");
-	printf("################ STARTING EMULATION ##################\n");
-	printf("######################################################\n");
-	printf("\n");
 
 	// While app is running
 	while( !quit ){
@@ -52,4 +55,12 @@ void start(){
 
 	// Free resources and close SDL
 	closeSDL();
+}
+
+bool runTests(){
+	if(testOpcodes()){
+		printf("Tests have passed!\n");
+	} else {
+		printf("Tests have failed!\n");
+	}
 }

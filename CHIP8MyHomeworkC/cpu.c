@@ -12,7 +12,7 @@
 #include "memory.c"
 #include "gpu.c"
 
-#define IS_DEBUG false
+#define IS_DEBUG true
 
 unsigned short getOpcode(int);
 void doCycle();
@@ -409,7 +409,10 @@ void doCycle(){
 		unsigned char highNibbleOnSecondByte = getHighNibble(lastByte);
 		unsigned char *VYdynamicRegister = getRegister(highNibbleOnSecondByte);
 
-		draw(memory[*VXdynamicRegister], memory[*VYdynamicRegister], lowNibbleOnSecondByte);
+		printf("VX = %x", *VXdynamicRegister);
+		printf("VY = %x", *VYdynamicRegister);
+
+		//draw(memory[*VXdynamicRegister], memory[*VYdynamicRegister], lowNibbleOnSecondByte);
 
 		nextInstruction();
 	}
@@ -586,13 +589,17 @@ void doCycle(){
 	// Update timers
 	if(DT > 0) {
 		--DT;
+	} else {
+		DT = 0x3C; // not sure if this is what we should actually do
 	}
 
 	if(ST > 0){
 		if(ST == 1){
-			printf("BEEP!\n");
+			//printf("BEEP!");
 		}
 		--ST;
+	} else {
+		ST = 0x3C; // not sure if this is what we should actually do
 	}
 
 }
@@ -602,26 +609,20 @@ unsigned short removeBase(unsigned short opcode, unsigned short base){
 }
 
 void pushAddressToStack(){
-	if(stack != SP){
-		SP += 0x01;
-	}
-
 	// store the address of the instruction after the call
-	*SP = PC + 0x02;
+	stack[SP] = PC + 0x02;
+
+	SP += 1;
 }
 
 void popAddressFromStack(){
 	// pull return address from the stack
-	PC = *SP;
+	PC = stack[SP - 1];
 
 	// stacks usually don't set the popped value to null, but it'll help me with visualization
-	*SP = 0x0;
+	stack[SP - 1] = 0x0;
 
-	// popped return address means
-	// stack pointer needs to move to previous value
-	if(SP != stack){
-		SP -= 0x01;
-	}
+	SP -= 1;
 }
 
 void call(unsigned short addr){
@@ -631,7 +632,6 @@ void call(unsigned short addr){
 
 void gotoAddr(unsigned short addr){
 	PC = addr;
-	nextInstruction();
 }
 
 void nextInstruction(){

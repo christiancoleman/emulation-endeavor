@@ -10,7 +10,8 @@
 
 unsigned char *memory;
 unsigned short *stack;
-unsigned short *SP; // stack pointer
+
+unsigned int SP; // stack pointer
 
 unsigned short I; 	// index register
 
@@ -51,7 +52,8 @@ void initMemory(){
 
 	memory = calloc( ( 4096 + 1 ), sizeof(unsigned char) );
 	stack = calloc( ( 16 + 1 ), sizeof(unsigned short) );
-	SP = stack;
+
+	SP = 0;
 
 	I = 0x0000;
 
@@ -175,8 +177,8 @@ void DEBUG_printState(unsigned short opcode){
 	printf("Opcode: \t%x\n", opcode);
 	printf("\n");
 	printf("Stack: \t\t%x\n", stack);
+	printf("\n");
 	printf("SP: \t\t%x\n", SP);
-	printf("SP*: \t\t%x\n", *SP);
 	printf("\n");
 	printf("PC: \t\t%x\n", PC);
 	printf("\n");
