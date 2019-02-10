@@ -27,9 +27,12 @@ bool test8XY4_WithCarry();
 bool test8XY4_NOCarry();
 bool test8XY5_WithCarry();
 bool test8XY5_NOCarry();
-bool test8XY6();
-bool test8XY7();
-bool test8XYE();
+bool test8XY6_SetVF();
+bool test8XY6_NOSetVF();
+bool test8XY7_WithCarry();
+bool test8XY7_NOCarry();
+bool test8XYE_Store0inVX();
+bool test8XYE_Store1inVX();
 
 bool testOpcodes(){
 	return test00E0()
@@ -53,9 +56,12 @@ bool testOpcodes(){
 	&& test8XY4_NOCarry()
 	&& test8XY5_WithCarry()
 	&& test8XY5_NOCarry()
-	&& test8XY6()
-	&& test8XY7()
-	&& test8XYE()
+	&& test8XY6_SetVF()
+	&& test8XY6_NOSetVF()
+	&& test8XY7_WithCarry()
+	&& test8XY7_NOCarry()
+	&& test8XYE_Store0inVX()
+	&& test8XYE_Store1inVX()
 	;
 }
 
@@ -508,7 +514,7 @@ bool test8XY3(){
 }
 
 bool test8XY4_WithCarry(){
-	char* OP_NAME = "test8XY4_WithCarry: ";
+	char* OP_NAME = "8XY4_WithCarry: ";
 	initMemory();
 
 	// test conditions
@@ -543,7 +549,7 @@ bool test8XY4_WithCarry(){
 }
 
 bool test8XY4_NOCarry(){
-	char* OP_NAME = "test8XY4_NOCarry: ";
+	char* OP_NAME = "8XY4_NOCarry: ";
 	initMemory();
 
 	// test conditions
@@ -578,7 +584,7 @@ bool test8XY4_NOCarry(){
 }
 
 bool test8XY5_WithCarry(){
-	char* OP_NAME = "8XY5: ";
+	char* OP_NAME = "8XY5_WithCarry: ";
 	initMemory();
 
 	// test conditions
@@ -587,7 +593,7 @@ bool test8XY5_WithCarry(){
 	memory[PC + 1] = 0x75;
 
 	V9 = 0x7;
-	V7 = 0x33;
+	V7 = 0xFF;
 
 	// RUN TEST!
 	doCycle();
@@ -599,15 +605,21 @@ bool test8XY5_WithCarry(){
 	}
 
 	// check registers
-	if(V9 != 0x37){
+	if(V9 != 0x08){
 		printf("%s REGISTERS - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	//check VF
+	if(VF != 1){
+		printf("%s VF - FAIL\n", OP_NAME);
 		return false;
 	}
 	return true;
 }
 
 bool test8XY5_NOCarry(){
-	char* OP_NAME = "8XY5: ";
+	char* OP_NAME = "8XY5_NOCarry: ";
 	initMemory();
 
 	// test conditions
@@ -616,7 +628,7 @@ bool test8XY5_NOCarry(){
 	memory[PC + 1] = 0x75;
 
 	V9 = 0x7;
-	V7 = 0x33;
+	V7 = 0x6;
 
 	// RUN TEST!
 	doCycle();
@@ -628,24 +640,29 @@ bool test8XY5_NOCarry(){
 	}
 
 	// check registers
-	if(V9 != 0x37){
+	if(V9 != 0x1){
 		printf("%s REGISTERS - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	//check VF
+	if(VF != 0){
+		printf("%s VF - FAIL\n", OP_NAME);
 		return false;
 	}
 	return true;
 }
 
-bool test8XY6(){
-	char* OP_NAME = "8XY6: ";
+bool test8XY6_SetVF(){
+	char* OP_NAME = "8XY6_SetVF: ";
 	initMemory();
 
 	// test conditions
 	PC = 0x200;
 	memory[PC] = 0x89;
-	memory[PC + 1] = 0x76;
+	memory[PC + 1] = 0x06;
 
-	V9 = 0x7;
-	V7 = 0x33;
+	V9 = 0x3F;
 
 	// RUN TEST!
 	doCycle();
@@ -657,15 +674,90 @@ bool test8XY6(){
 	}
 
 	// check registers
-	if(V9 != 0x37){
+	if(V9 != 0x1F){
 		printf("%s REGISTERS - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	// check VF
+	if(VF != 0x1){
+		printf("%s VF - FAIL\n", OP_NAME);
 		return false;
 	}
 	return true;
 }
 
-bool test8XY7(){
-	char* OP_NAME = "8XY7: ";
+bool test8XY6_NOSetVF(){
+	char* OP_NAME = "8XY6_NOSetVF: ";
+	initMemory();
+
+	// test conditions
+	PC = 0x200;
+	memory[PC] = 0x89;
+	memory[PC + 1] = 0x06;
+
+	V9 = 0x2A;
+
+	// RUN TEST!
+	doCycle();
+
+	// check PC
+	if(PC != 0x202) {
+		printf("%s PC - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	// check registers
+	if(V9 != 0x15){
+		printf("%s REGISTERS - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	// check VF
+	if(VF != 0x0){
+		printf("%s VF - FAIL\n", OP_NAME);
+		return false;
+	}
+	return true;
+}
+
+bool test8XY7_WithCarry(){
+	char* OP_NAME = "8XY7_WithCarry: ";
+	initMemory();
+
+	// test conditions
+	PC = 0x200;
+	memory[PC] = 0x89;
+	memory[PC + 1] = 0x77;
+
+	V9 = 0x33;
+	V7 = 0x7;
+
+	// RUN TEST!
+	doCycle();
+
+	// check PC
+	if(PC != 0x202) {
+		printf("%s PC - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	// check registers
+	if(V9 != 0xD4){
+		printf("%s REGISTERS - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	// check VF
+	if(VF != 0x1){
+		printf("%s VF - FAIL\n", OP_NAME);
+		return false;
+	}
+	return true;
+}
+
+bool test8XY7_NOCarry(){
+	char* OP_NAME = "8XY7_NOCarry: ";
 	initMemory();
 
 	// test conditions
@@ -686,24 +778,29 @@ bool test8XY7(){
 	}
 
 	// check registers
-	if(V9 != 0x37){
+	if(V9 != 0x2C){
 		printf("%s REGISTERS - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	// check VF
+	if(VF != 0x0){
+		printf("%s VF - FAIL\n", OP_NAME);
 		return false;
 	}
 	return true;
 }
 
-bool test8XYE(){
-	char* OP_NAME = "8XYE: ";
+bool test8XYE_Store0inVX(){
+	char* OP_NAME = "8XYE_Store0inVX: ";
 	initMemory();
 
 	// test conditions
 	PC = 0x200;
 	memory[PC] = 0x89;
-	memory[PC + 1] = 0x7E;
+	memory[PC + 1] = 0x0E;
 
-	V9 = 0x7;
-	V7 = 0x33;
+	V9 = 0xFE;
 
 	// RUN TEST!
 	doCycle();
@@ -715,8 +812,48 @@ bool test8XYE(){
 	}
 
 	// check registers
-	if(V9 != 0x37){
+	if(V9 != 0xFC){
 		printf("%s REGISTERS - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	// check VF
+	if(VF != 0x1){
+		printf("%s VF - FAIL\n", OP_NAME);
+		return false;
+	}
+	return true;
+}
+
+bool test8XYE_Store1inVX(){
+	char* OP_NAME = "8XYE_Store1inVX: ";
+	initMemory();
+
+	// test conditions
+	PC = 0x200;
+	memory[PC] = 0x89;
+	memory[PC + 1] = 0x0E;
+
+	V9 = 0x7;
+
+	// RUN TEST!
+	doCycle();
+
+	// check PC
+	if(PC != 0x202) {
+		printf("%s PC - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	// check registers
+	if(V9 != 0xE){
+		printf("%s REGISTERS - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	// check VF
+	if(VF != 0x0){
+		printf("%s VF - FAIL\n", OP_NAME);
 		return false;
 	}
 	return true;

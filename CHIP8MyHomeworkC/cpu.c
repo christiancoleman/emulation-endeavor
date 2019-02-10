@@ -231,6 +231,9 @@ void doCycle(){
 		unsigned char highNibbleOnSecondByte = getHighNibble(lastByte);
 		unsigned char *VYdynamicRegister = getRegister(highNibbleOnSecondByte);
 
+		// used later sometimes
+		unsigned short result = 0x00;
+
 		switch(lowNibbleOnLastByte){
 
 			// Sets VX to the value of VY.
@@ -269,8 +272,8 @@ void doCycle(){
 			// type: Math
 			// template: 8XY4
 			// Vx += Vy
-			case 0x4: ; // <-https://stackoverflow.com/questions/18496282/why-do-i-get-a-label-can-only-be-part-of-a-statement-and-a-declaration-is-not-a
-				unsigned short result = (*VXdynamicRegister) + (*VYdynamicRegister);
+			case 0x4: ;
+				result = *VXdynamicRegister + *VYdynamicRegister;
 				if(result > 0xFF){
 					VF = 0x1;
 				} else {
@@ -285,6 +288,12 @@ void doCycle(){
 			// template: 8XY5
 			// Vx -= Vy
 			case 0x5:
+				result = *VXdynamicRegister - *VYdynamicRegister;
+				if(result > 0xFF){
+					VF = 0x1;
+				} else {
+					VF = 0x0;
+				}
 				*VXdynamicRegister -= *VYdynamicRegister;
 				break;
 
@@ -293,6 +302,8 @@ void doCycle(){
 			// template: 8XY6
 			// Vx>>=1
 			case 0x6:
+				result = *VXdynamicRegister & 0x1;
+				VF = result;
 				*VXdynamicRegister >>= 1;
 				break;
 
@@ -302,6 +313,12 @@ void doCycle(){
 			// template: 8XY7
 			// Vx=Vy-Vx
 			case 0x7:
+				result = *VYdynamicRegister - *VXdynamicRegister;
+				if(result > 0xFF){
+					VF = 0x1;
+				} else {
+					VF = 0x0;
+				}
 				*VXdynamicRegister = *VYdynamicRegister - *VXdynamicRegister;
 				break;
 
@@ -310,6 +327,8 @@ void doCycle(){
 			// template: 8XYE
 			// Vx<<=1
 			case 0xE:
+				result = *VXdynamicRegister >> 7;
+				VF = result;
 				*VXdynamicRegister <<= 1;
 				break;
 
