@@ -667,7 +667,7 @@ bool test8XY5_WithCarry(){
 	}
 
 	//check VF
-	if(VF != 1){
+	if(VF != 0){
 		printf("%s VF - FAIL\n", OP_NAME);
 		return false;
 	}
@@ -702,7 +702,7 @@ bool test8XY5_NOCarry(){
 	}
 
 	//check VF
-	if(VF != 0){
+	if(VF != 1){
 		printf("%s VF - FAIL\n", OP_NAME);
 		return false;
 	}
@@ -805,7 +805,7 @@ bool test8XY7_WithCarry(){
 	}
 
 	// check VF
-	if(VF != 0x1){
+	if(VF != 0x0){
 		printf("%s VF - FAIL\n", OP_NAME);
 		return false;
 	}
@@ -840,7 +840,7 @@ bool test8XY7_NOCarry(){
 	}
 
 	// check VF
-	if(VF != 0x0){
+	if(VF != 0x1){
 		printf("%s VF - FAIL\n", OP_NAME);
 		return false;
 	}
@@ -1249,8 +1249,6 @@ bool testFX15(){
 	}
 
 	//check DT
-	// TODO: SHOULD THE TIMER BE DECREASED YET AGAIN
-	// BEFORE THIS TEST????
 	if(DT != 0x44){
 		printf("%s DT - FAIL\n", OP_NAME);
 		return false;
@@ -1279,8 +1277,6 @@ bool testFX18(){
 	}
 
 	//check ST
-	// TODO: SHOULD THE TIMER BE DECREASED YET AGAIN
-	// BEFORE THIS TEST????
 	if(ST != 0x44){
 		printf("%s ST - FAIL\n", OP_NAME);
 		return false;
@@ -1297,8 +1293,8 @@ bool testFX1E(){
 	memory[PC] = 0xF0;
 	memory[PC + 1] = 0x1E;
 
-	V0 = 0x3;
-	keys[0x3] = 0x1;
+	V0 = 0x12;
+	I = 0x3;
 
 	// RUN TEST!
 	doCycle(true);
@@ -1309,6 +1305,11 @@ bool testFX1E(){
 		return false;
 	}
 
+	// check I
+	if(I != 0x15){
+		printf("%s I - FAIL\n", OP_NAME);
+		return false;
+	}
 	return true;
 }
 
@@ -1321,8 +1322,8 @@ bool testFX29(){
 	memory[PC] = 0xF0;
 	memory[PC + 1] = 0x29;
 
-	V0 = 0x3;
-	keys[0x3] = 0x1;
+	V0 = 0x12;
+	I = 0x99;
 
 	// RUN TEST!
 	doCycle(true);
@@ -1333,6 +1334,11 @@ bool testFX29(){
 		return false;
 	}
 
+	// check I
+	if(I != 0x5A){
+		printf("%s I - FAIL\n", OP_NAME);
+		return false;
+	}
 	return true;
 }
 
@@ -1345,8 +1351,8 @@ bool testFX33(){
 	memory[PC] = 0xF0;
 	memory[PC + 1] = 0x33;
 
-	V0 = 0x3;
-	keys[0x3] = 0x1;
+	I = 0x96;
+	V0 = 0xEF; // or 291
 
 	// RUN TEST!
 	doCycle(true);
@@ -1357,6 +1363,23 @@ bool testFX33(){
 		return false;
 	}
 
+	// check memory[I]
+	if(memory[I] != 0x2){
+		printf("%s memory[I] - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	// check memory[I + 1]
+	if(memory[I + 1] != 0x3){
+		printf("%s memory[I + 1] - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	// check memory[I + 2]
+	if(memory[I + 2] != 0x9){
+		printf("%s memory[I + 2] - FAIL\n", OP_NAME);
+		return false;
+	}
 	return true;
 }
 
@@ -1366,11 +1389,13 @@ bool testFX55(){
 
 	// test conditions
 	PC = 0x200;
-	memory[PC] = 0xF0;
+	memory[PC] = 0xF2;
 	memory[PC + 1] = 0x55;
 
-	V0 = 0x3;
-	keys[0x3] = 0x1;
+	I = 0x208;
+	V0 = 0x7;
+	V1 = 0x8;
+	V2 = 0x9;
 
 	// RUN TEST!
 	doCycle(true);
@@ -1381,6 +1406,19 @@ bool testFX55(){
 		return false;
 	}
 
+	// check memory
+	if(memory[0x208] != 0x7){
+		printf("%s memory[0x208] - FAIL\n", OP_NAME);
+		return false;
+	}
+	if(memory[0x209] != 0x8){
+		printf("%s memory[0x209] - FAIL\n", OP_NAME);
+		return false;
+	}
+	if(memory[0x20A] != 0x9){
+		printf("%s memory[0x20A] - FAIL\n", OP_NAME);
+		return false;
+	}
 	return true;
 }
 
@@ -1390,11 +1428,16 @@ bool testFX65(){
 
 	// test conditions
 	PC = 0x200;
-	memory[PC] = 0xF0;
+	memory[PC] = 0xF2;
 	memory[PC + 1] = 0x65;
 
-	V0 = 0x3;
-	keys[0x3] = 0x1;
+	I = 0x300;
+	memory[0x300] = 0x3;
+	memory[0x301] = 0x4;
+	memory[0x302] = 0x5;
+	V0 = 0xFF;
+	V1 = 0xFF;
+	V2 = 0xFF;
 
 	// RUN TEST!
 	doCycle(true);
@@ -1405,5 +1448,19 @@ bool testFX65(){
 		return false;
 	}
 
+	// check registers
+	if(V0 != 0x3){
+		printf("%s V0 - FAIL\n", OP_NAME);
+		return false;
+	}
+	if(V1 != 0x4){
+		printf("V1 = %x\n", V1);
+		printf("%s V1 - FAIL\n", OP_NAME);
+		return false;
+	}
+	if(V2 != 0x5){
+		printf("%s V2 - FAIL\n", OP_NAME);
+		return false;
+	}
 	return true;
 }

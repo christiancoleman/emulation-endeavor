@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-char * ROM_NAME = "_BLINKY";
+char * ROM_NAME = "_INVADERS";
 
 void loadRom();
 int getSizeOfFile(FILE*);
