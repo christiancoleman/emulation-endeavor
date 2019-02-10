@@ -2,8 +2,7 @@
 
 #include <stdio.h>
 
-//char * ROM_NAME = "_TETRIS";
-char * ROM_NAME = "_BC_Test";
+char * ROM_NAME = "_BLINKY";
 
 void loadRom();
 int getSizeOfFile(FILE*);

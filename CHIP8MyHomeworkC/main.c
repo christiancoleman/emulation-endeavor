@@ -14,6 +14,7 @@ const bool IS_RUNNING_TESTS = false;
 
 void start();
 bool runTests();
+void slowItDown();
 
 int main(int argc, char * argv[]){
 
@@ -98,6 +99,7 @@ void start(){
 		if(shouldDraw){
 			draw();
 		}
+		slowItDown();
 	}
 
 	// Free resources and close SDL
@@ -110,4 +112,10 @@ bool runTests(){
 	} else {
 		printf("Tests have failed!\n\n");
 	}
+}
+
+// 540 MHz was the speed of the CHIP-8
+// 540 MHz is 1.8518518518519E-9 seconds
+void slowItDown(){
+	SDL_Delay(1);
 }

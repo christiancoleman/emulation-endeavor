@@ -3,7 +3,7 @@
 #include "memory.c"
 #include "SDL2/SDL.h"
 
-#define SCALE 10
+#define SCALE 20
 // 64x32 is the original screen size of the CHIP-8
 #define SCREEN_WIDTH 64
 #define SCREEN_HEIGHT 32
