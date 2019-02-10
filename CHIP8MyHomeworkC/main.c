@@ -23,7 +23,6 @@ int main(int argc, char * argv[]){
 		runTests();
 		return 0;
 	}
-	printf("made it here at least");
 
 	// memory.c
 	initMemory();

@@ -118,8 +118,7 @@ bool initSDL(){
 				success = false;
 			}
 			else {
-				// Initialize rendered color
-				SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0xFF, 0xFF );
+				// NOTHING
 			}
 		}
 	}
@@ -152,8 +151,6 @@ void draw(){
 	rect.y = 0;
 	rect.h = SCREEN_HEIGHT * SCALE;
 	rect.w = SCREEN_WIDTH * SCALE;
-	//rect.h = 64*SCALE;
-	//rect.w = 64*SCALE;
 
 	for(int i = 0; i < SCREEN_WIDTH; i++){
 		for(int j = 0; j < SCREEN_HEIGHT; j++){
@@ -167,7 +164,7 @@ void draw(){
 					SDL_RenderFillRect( renderer, &rect );
 				}
 				else if(newFrame[i][j] == 0){
-					SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0xFF, 0xFF );
+					SDL_SetRenderDrawColor( renderer, 0x00, 0x00, 0x00, 0x00 );
 					SDL_RenderFillRect( renderer, &rect );
 				}
 			}

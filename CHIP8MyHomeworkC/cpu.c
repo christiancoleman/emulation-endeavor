@@ -289,9 +289,9 @@ void doCycle(bool IS_RUNNING_TESTS){
 			case 0x5:
 				result = *VXdynamicRegister - *VYdynamicRegister;
 				if(result > 0xFF){
-					VF = 0x1;
-				} else {
 					VF = 0x0;
+				} else {
+					VF = 0x1;
 				}
 				*VXdynamicRegister -= *VYdynamicRegister;
 				break;
@@ -314,9 +314,9 @@ void doCycle(bool IS_RUNNING_TESTS){
 			case 0x7:
 				result = *VYdynamicRegister - *VXdynamicRegister;
 				if(result > 0xFF){
-					VF = 0x1;
-				} else {
 					VF = 0x0;
+				} else {
+					VF = 0x1;
 				}
 				*VXdynamicRegister = *VYdynamicRegister - *VXdynamicRegister;
 				break;
@@ -440,9 +440,6 @@ void doCycle(bool IS_RUNNING_TESTS){
 		unsigned char highNibbleOnSecondByte = getHighNibble(lastByte);
 		unsigned char *VYdynamicRegister = getRegister(highNibbleOnSecondByte);
 
-		//printf("VX = %x, ", *VXdynamicRegister);
-		//printf("VY = %x\n", *VYdynamicRegister);
-
 		// store backup of old frame
 		for(int i = 0; i < SCREEN_WIDTH; i++){
 			for(int j = 0; j < SCREEN_HEIGHT; j++){
@@ -455,23 +452,25 @@ void doCycle(bool IS_RUNNING_TESTS){
 		unsigned char VX = *VXdynamicRegister;
 		unsigned char VY = *VYdynamicRegister;
 
-		unsigned char pixelCheck = 0x0;
-
-		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		// TODO: COME BACK TO THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		unsigned char pixelToDraw = 0x0;
 
 		// add new sprites to new frame
 		for(int i = 0; i < height; i++){
 
-			pixelCheck = memory[I + i];
+			// each pixel is on a new line and is 8 bits wide
+			pixelToDraw = memory[I + i];
 
 			// each sprite is 8 pixels wide
 			for(int j = 0; j < 8; j++){
-				//newFrame[VX + i][VY + j] ^= 1;
-				if((pixelCheck & (0x80 >> j)) != 0) {
+
+				// 0x80 is 10000000b
+				// Compares 10000000, 01000000, 00100000, etc. to new pixel
+				// if pixel has a bit in that spot it will trigger;
+				// actually filling frame with new data
+				// if new frame already had data there then we set VF to 1
+				if((pixelToDraw & (0x80 >> j)) != 0) {
 					if(newFrame[VX+j][VY+i] == 1) {
-						VF = 1;
+						VF = 0x1;
 					}
 					newFrame[VX+j][VY+i] ^= 1;
 				}
@@ -587,11 +586,11 @@ void doCycle(bool IS_RUNNING_TESTS){
 			case 0x1E:
 				I += *VXdynamicRegister;
 				// IS THIS NEEDED??????????????????????????????????????????????????????????????????????????????
-				if(I > 0xFFF){
+				/*if(I > 0xFFF){
 					VF = 1;
 				} else {
 					VF = 0;
-				}
+				}*/
 				break;
 
 			// Sets I to the location of the sprite for the character in VX. Characters 0-F
@@ -645,6 +644,15 @@ void doCycle(bool IS_RUNNING_TESTS){
 					unsigned char *VtempDynamicRegister = getRegister(i);
 					*VtempDynamicRegister = memory[I + i];
 				}
+				// I've seen this done differently a few places
+				// https://github.com/Spittie/chip8-sdl/blob/master/src/main.c
+				// ^ just adds 1
+				// whereas
+				// http://www.codeslinger.co.uk/pages/projects/chip8/examples.html
+				// ^ does + 1 and + X (from VX)
+
+				// https://en.wikipedia.org/wiki/CHIP-8#cite_note-onlgame-4
+				// ^ suggests doing nothing though
 				break;
 
 			default:
