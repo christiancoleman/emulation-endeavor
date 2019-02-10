@@ -87,12 +87,29 @@ bool test00E0(){
 	memory[PC] = 0x00;
 	memory[PC + 1] = 0xE0;
 
+	// populate graphics with garbage to be sure it's cleared later
+	for(int i = 0; i < SCREEN_WIDTH; i++){
+		for(int j = 0; j < SCREEN_HEIGHT; j++){
+			newFrame[i][j] = 0xFF;
+		}
+	}
+
 	// RUN TEST!
 	doCycle(true);
 
-	// TODO!!!!!
-	// CLEAR SCREEN CHECK
-	// Make sure gfx array is all 0s?
+	// check graphics screen
+	for(int i = 0; i < SCREEN_WIDTH; i++){
+		for(int j = 0; j < SCREEN_HEIGHT; j++){
+			if(newFrame[i][j] != 0x0){
+				printf("%s GRAPHICS - FAIL\n", OP_NAME);
+			}
+		}
+	}
+
+	// check shouldDraw
+	if(shouldDraw != true){
+		printf("%s shouldDraw != true - FAIL\n", OP_NAME);
+	}
 
 	// check PC
 	if(PC != 0x202) {
@@ -1021,7 +1038,7 @@ bool testDNNN(){
 
 	// TODO!!!!!
 	// CLEAR SCREEN CHECK
-	// Make sure gfx array is all 0s?
+	// Make sure newFrame array is all 0s?
 
 	// check PC
 	if(PC != 0x202) {

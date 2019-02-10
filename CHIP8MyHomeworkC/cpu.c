@@ -52,6 +52,7 @@ void doCycle(bool IS_RUNNING_TESTS){
 	// disp_clear()
 	if(opcode == 0x00E0) {
 		clearScreen();
+		shouldDraw = true;
 		nextInstruction();
 	}
 
@@ -427,7 +428,7 @@ void doCycle(bool IS_RUNNING_TESTS){
 		// get last byte (usually NN but that's not needed for this operation but is needed for lowNibble)
 		unsigned char lastByte = getLastByte(opcodeClean);
 
-		// get N
+		// get N or height
 		unsigned char lowNibbleOnSecondByte = getLowNibble(lastByte);
 
 		// get Vx
@@ -438,10 +439,41 @@ void doCycle(bool IS_RUNNING_TESTS){
 		unsigned char highNibbleOnSecondByte = getHighNibble(lastByte);
 		unsigned char *VYdynamicRegister = getRegister(highNibbleOnSecondByte);
 
-		printf("VX = %x", *VXdynamicRegister);
-		printf("VY = %x", *VYdynamicRegister);
+		printf("VX = %x, ", *VXdynamicRegister);
+		printf("VY = %x\n", *VYdynamicRegister);
 
-		draw(memory[*VXdynamicRegister], memory[*VYdynamicRegister], lowNibbleOnSecondByte);
+		// store backup of old frame
+		for(int i = 0; i < SCREEN_WIDTH; i++){
+			for(int j = 0; j < SCREEN_HEIGHT; j++){
+				oldFrame[i][j] = newFrame[i][j];
+			}
+		}
+
+		// for prettier reading code
+		unsigned char height = lowNibbleOnSecondByte;
+		unsigned char VX = *VXdynamicRegister;
+		unsigned char VY = *VYdynamicRegister;
+
+		unsigned char pixelCheck = 0x0;
+
+		// add new sprites to new frame
+		for(int i = 0; i < height; i++){
+
+			pixelCheck = memory[I + i];
+
+			// each sprite is 8 pixels wide
+			for(int j = 0; j < 8; j++){
+				//newFrame[VX + i][VY + j] ^= 1;
+				if((pixelCheck & (0x80 >> j)) != 0) {
+					if(newFrame[VX+j][VY+i] == 1) {
+						VF = 1;
+					}
+					newFrame[VX+j][VY+i] ^= 1;
+				}
+			}
+		}
+
+		shouldDraw = true;
 
 		nextInstruction();
 	}

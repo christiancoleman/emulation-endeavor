@@ -4,10 +4,14 @@
 #include "SDL2/SDL.h"
 
 #define SCALE 10
-#define SCREEN_WIDTH 64*SCALE
-#define SCREEN_HEIGHT 32*SCALE
+// 64x32 is the original screen size of the CHIP-8
+#define SCREEN_WIDTH 64
+#define SCREEN_HEIGHT 32
 
-unsigned char gfx[SCREEN_WIDTH][SCREEN_HEIGHT];
+unsigned char oldFrame[SCREEN_WIDTH][SCREEN_HEIGHT];
+unsigned char newFrame[SCREEN_WIDTH][SCREEN_HEIGHT];
+
+bool shouldDraw = false;
 
 /*
 
@@ -58,8 +62,7 @@ void loadFontSet();
 bool initSDL();
 void closeSDL();
 void clearScreen();
-void draw(int, int, int);
-void drawD();
+void draw();
 
 //////////////////////////////////////
 //implementations
@@ -98,8 +101,8 @@ bool initSDL(){
 		window = SDL_CreateWindow("CHIP8MyHomework",
 			SDL_WINDOWPOS_UNDEFINED,
 			SDL_WINDOWPOS_UNDEFINED,
-			SCREEN_WIDTH,
-			SCREEN_HEIGHT,
+			(SCREEN_WIDTH * SCALE),
+			(SCREEN_HEIGHT * SCALE),
 			SDL_WINDOW_SHOWN
 		);
 
@@ -134,68 +137,48 @@ void closeSDL(){
 }
 
 void clearScreen(){
+	for(int i = 0; i < SCREEN_WIDTH; i++){
+		for(int j = 0; j < SCREEN_HEIGHT; j++){
+			newFrame[i][j] = 0x0;
+		}
+	}
+}
+
+void draw(){
 	// Clear screen
 	SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0xFF, 0xFF );
 	SDL_RenderClear( renderer );
 
-	// Update screen
-	SDL_RenderPresent( renderer );
-}
+	SDL_Rect rect;
 
-//void draw(int x1, int y1, int x2, int y2){
-	//Clear screen
-	//SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0xFF, 0xFF );
-	//SDL_RenderClear( renderer );
+	rect.x = 0;
+	rect.y = 0;
+	rect.h = SCREEN_HEIGHT * SCALE;
+	rect.w = SCREEN_WIDTH * SCALE;
+	//rect.h = 64*SCALE;
+	//rect.w = 64*SCALE;
 
-	//Render red filled quad
-	/*SDL_Rect fillRect = { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 };
-	SDL_SetRenderDrawColor( renderer, 0xFF, 0x00, 0x00, 0xFF );
-	SDL_RenderFillRect( renderer, &fillRect );*/
-
-	//Render green outlined quad
-	//SDL_Rect outlineRect = { SCREEN_WIDTH / 6, SCREEN_HEIGHT / 6, SCREEN_WIDTH * 2 / 3, SCREEN_HEIGHT * 2 / 3 };
-	//SDL_SetRenderDrawColor( renderer, 0x00, 0xFF, 0x00, 0xFF );
-	//SDL_RenderDrawRect( renderer, &outlineRect );
-
-	//Draw vertical line of yellow dots
-	/*SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0x00, 0xFF );
-	for( int i = 0; i < SCREEN_HEIGHT; i += 4 )	{
-		SDL_RenderDrawPoint( renderer, SCREEN_WIDTH / 2, i );
+	for(int i = 0; i < SCREEN_WIDTH; i++){
+		for(int j = 0; j < SCREEN_HEIGHT; j++){
+			if(oldFrame[i][j] ^ newFrame[i][j] == 1){
+				rect.x = i * SCALE;
+				rect.y = j * SCALE;
+				rect.w = SCALE;
+				rect.h = SCALE;
+				if(newFrame[i][j] == 1){
+					SDL_SetRenderDrawColor( renderer, 0x00, 0x00, 0xF0, 0xF0 );
+					SDL_RenderFillRect( renderer, &rect );
+				}
+				else if(newFrame[i][j] == 0){
+					SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0xFF, 0xFF );
+					SDL_RenderFillRect( renderer, &rect );
+				}
+			}
+		}
 	}
-	*/
-
-	//Update screen
-	//SDL_RenderPresent( renderer );
-//}
-
-void draw(int x, int y, int height){
-	//Clear screen
-	SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0xFF, 0xFF );
-	SDL_RenderClear( renderer );
-
-	int x1 = x;
-	int x2 = x + 8;
-	int y1 = y;
-	int y2 = y + 8;
-
-	// set color
-	SDL_SetRenderDrawColor( renderer, 0x00, 0x00, 0xF0, 0xF0 );
-
-	// for the height we want to draw the same line
-	for(int i = 0; i < height; i++){
-
-		SDL_RenderDrawLine(
-			renderer,
-			( x1+i ),
-			( y1+i ),
-			( x2+i ),
-			( y2+i )
-		);
-
-	}
-
-	//SDL_RenderDrawPoint( renderer, x, y );
 
 	//Update screen
 	SDL_RenderPresent( renderer );
+
+	shouldDraw = false;
 }

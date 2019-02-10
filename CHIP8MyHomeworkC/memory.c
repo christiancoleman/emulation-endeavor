@@ -51,6 +51,7 @@ void initMemory(){
 	printf("############## INITIALIZING MEMORY ###################\n");
 	printf("######################################################\n\n");
 
+	// using calloc because I want to be sure the memory is initialized to 0
 	memory = calloc( ( 4096 + 1 ), sizeof(unsigned char) );
 	stack = calloc( ( 16 + 1 ), sizeof(unsigned short) );
 

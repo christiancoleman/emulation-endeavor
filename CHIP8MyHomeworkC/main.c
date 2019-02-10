@@ -10,7 +10,7 @@
 
 // big help: https://github.com/Spittie/chip8-sdl/blob/master/src/main.c
 
-const bool IS_RUNNING_TESTS = true;
+const bool IS_RUNNING_TESTS = false;
 
 void start();
 bool runTests();
@@ -96,6 +96,9 @@ void start(){
 			}
 		}
 		doCycle(IS_RUNNING_TESTS);
+		if(shouldDraw){
+			draw();
+		}
 	}
 
 	// Free resources and close SDL
