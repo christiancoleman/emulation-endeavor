@@ -440,8 +440,8 @@ void doCycle(bool IS_RUNNING_TESTS){
 		unsigned char highNibbleOnSecondByte = getHighNibble(lastByte);
 		unsigned char *VYdynamicRegister = getRegister(highNibbleOnSecondByte);
 
-		printf("VX = %x, ", *VXdynamicRegister);
-		printf("VY = %x\n", *VYdynamicRegister);
+		//printf("VX = %x, ", *VXdynamicRegister);
+		//printf("VY = %x\n", *VYdynamicRegister);
 
 		// store backup of old frame
 		for(int i = 0; i < SCREEN_WIDTH; i++){
@@ -557,7 +557,7 @@ void doCycle(bool IS_RUNNING_TESTS){
 			// template: FX0A
 			// Vx = get_key()
 			case 0x0A:
-				for(int i = 1; i < 17; i++){
+				for(int i = 0; i < 16; i++){
 					if(keys[i] == 0x1){
 						*VXdynamicRegister = i;
 					}
@@ -586,6 +586,12 @@ void doCycle(bool IS_RUNNING_TESTS){
 			// I +=Vx
 			case 0x1E:
 				I += *VXdynamicRegister;
+				// IS THIS NEEDED??????????????????????????????????????????????????????????????????????????????
+				if(I > 0xFFF){
+					VF = 1;
+				} else {
+					VF = 0;
+				}
 				break;
 
 			// Sets I to the location of the sprite for the character in VX. Characters 0-F
@@ -594,7 +600,7 @@ void doCycle(bool IS_RUNNING_TESTS){
 			// template: FX29
 			// I=sprite_addr[Vx]
 			case 0x29:
-				I = memory[*VXdynamicRegister];
+				I = *VXdynamicRegister * 0x5;
 				break;
 
 			// Stores the binary-coded decimal representation of VX, with the most significant
@@ -609,11 +615,11 @@ void doCycle(bool IS_RUNNING_TESTS){
 			// *(I+1)=BCD(2);
 			// *(I+2)=BCD(1);
 			case 0x33:
-				printf("TESTING!!!!");
-				for(int i = 0; i <= lowNibbleOnFirstByte; i++){
-					unsigned char *VtempDynamicRegister = getRegister(lowNibbleOnFirstByte);
-					printf("lowNibbleOnFirstByte: %x", lowNibbleOnFirstByte);
-				}
+					// TODO: WHAT????????????????????????????????????????????????????????????????????????????????????????
+					//int tempInt = *VXdynamicRegister;
+					memory[I] = *VXdynamicRegister / 100;
+					memory[I + 1] = (*VXdynamicRegister / 10) % 10;
+					memory[I + 2] = *VXdynamicRegister % 10;
 				break;
 
 			// Stores V0 to VX (including VX) in memory starting at address I. The offset from
@@ -622,10 +628,9 @@ void doCycle(bool IS_RUNNING_TESTS){
 			// template: FX55
 			// reg_dump(Vx,&I)
 			case 0x55:
-				printf("TESTING!!!!");
 				for(int i = 0; i <= lowNibbleOnFirstByte; i++){
-					unsigned char *VtempDynamicRegister = getRegister(lowNibbleOnFirstByte);
-					printf("lowNibbleOnFirstByte: %x", lowNibbleOnFirstByte);
+					unsigned char *VtempDynamicRegister = getRegister(i);
+					memory[I + i] = *VtempDynamicRegister;
 				}
 				break;
 
@@ -636,10 +641,9 @@ void doCycle(bool IS_RUNNING_TESTS){
 			// template: FX65
 			// reg_load(Vx,&I)
 			case 0x65:
-				printf("TESTING!!!!");
 				for(int i = 0; i <= lowNibbleOnFirstByte; i++){
-					unsigned char *VtempDynamicRegister = getRegister(lowNibbleOnFirstByte);
-					printf("lowNibbleOnFirstByte: %x", lowNibbleOnFirstByte);
+					unsigned char *VtempDynamicRegister = getRegister(i);
+					*VtempDynamicRegister = memory[I + i];
 				}
 				break;
 

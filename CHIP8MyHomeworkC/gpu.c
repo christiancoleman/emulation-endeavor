@@ -146,10 +146,6 @@ void clearScreen(){
 }
 
 void draw(){
-	// Clear screen
-	SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0xFF, 0xFF );
-	SDL_RenderClear( renderer );
-
 	SDL_Rect rect;
 
 	rect.x = 0;

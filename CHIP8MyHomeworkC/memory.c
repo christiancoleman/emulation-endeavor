@@ -190,11 +190,11 @@ void DEBUG_printState(unsigned short opcode){
 	printf("\n");
 	printf("I: \t\t%x\n", I);
 	printf("\n");
-	printf("Keys: ");
 	for(int i = 0; i < 16; i++){
+		if(i == 8) { printf("\n"); }
 		printf("keys[%x] = %x; ", i, keys[i]);
 	}
-	printf("\n");
+	printf("\n\n");
 	printf("DT: \t\t%x\n", DT);
 	printf("ST: \t\t%x\n", ST);
 	printf("\n");

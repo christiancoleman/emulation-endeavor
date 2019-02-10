@@ -488,10 +488,10 @@ bool test8XY1(){
 	// test conditions
 	PC = 0x200;
 	memory[PC] = 0x89;
-	memory[PC + 1] = 0x71;
+	memory[PC + 1] = 0x41;
 
 	V9 = 0x7;
-	V7 = 0x33;
+	V4 = 0x33;
 
 	// RUN TEST!
 	doCycle(true);
@@ -1171,37 +1171,239 @@ bool testEXA1_Key_EQUALS_VX_NOSKIP(){
 }
 
 bool testFX07(){
+	char* OP_NAME = "FX07: ";
+	initMemory();
+
+	// test conditions
+	PC = 0x200;
+	memory[PC] = 0xF0;
+	memory[PC + 1] = 0x07;
+
+	V0 = 0x3;
+	DT = 0x59;
+
+	// RUN TEST!
+	doCycle(true);
+
+	// check PC
+	if(PC != 0x202) {
+		printf("%s PC - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	// check register
+	if(V0 != 0x59){
+		printf("%s REGISTERS - FAIL\n", OP_NAME);
+		return false;
+	}
+
 	return true;
 }
 
 bool testFX0A(){
+	char* OP_NAME = "FX0A: ";
+	initMemory();
+
+	// test conditions
+	PC = 0x200;
+	memory[PC] = 0xF0;
+	memory[PC + 1] = 0x0A;
+
+	keys[0x3] = 0x1;
+
+	// RUN TEST!
+	doCycle(true);
+
+	// check PC
+	if(PC != 0x202) {
+		printf("%s PC - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	// check registers
+	if(V0 != 0x3){
+		printf("%s REGISTERS - FAIL\n", OP_NAME);
+		return false;
+	}
 	return true;
 }
 
 bool testFX15(){
+	char* OP_NAME = "FX15: ";
+	initMemory();
+
+	// test conditions
+	PC = 0x200;
+	memory[PC] = 0xF0;
+	memory[PC + 1] = 0x15;
+
+	V0 = 0x45;
+
+	// RUN TEST!
+	doCycle(true);
+
+	// check PC
+	if(PC != 0x202) {
+		printf("%s PC - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	//check DT
+	// TODO: SHOULD THE TIMER BE DECREASED YET AGAIN
+	// BEFORE THIS TEST????
+	if(DT != 0x44){
+		printf("%s DT - FAIL\n", OP_NAME);
+		return false;
+	}
 	return true;
 }
 
 bool testFX18(){
+	char* OP_NAME = "FX18: ";
+	initMemory();
+
+	// test conditions
+	PC = 0x200;
+	memory[PC] = 0xF0;
+	memory[PC + 1] = 0x18;
+
+	V0 = 0x45;
+
+	// RUN TEST!
+	doCycle(true);
+
+	// check PC
+	if(PC != 0x202) {
+		printf("%s PC - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	//check ST
+	// TODO: SHOULD THE TIMER BE DECREASED YET AGAIN
+	// BEFORE THIS TEST????
+	if(ST != 0x44){
+		printf("%s ST - FAIL\n", OP_NAME);
+		return false;
+	}
 	return true;
 }
 
 bool testFX1E(){
+	char* OP_NAME = "FX1E: ";
+	initMemory();
+
+	// test conditions
+	PC = 0x200;
+	memory[PC] = 0xF0;
+	memory[PC + 1] = 0x1E;
+
+	V0 = 0x3;
+	keys[0x3] = 0x1;
+
+	// RUN TEST!
+	doCycle(true);
+
+	// check PC
+	if(PC != 0x202) {
+		printf("%s PC - FAIL\n", OP_NAME);
+		return false;
+	}
+
 	return true;
 }
 
 bool testFX29(){
+	char* OP_NAME = "FX29: ";
+	initMemory();
+
+	// test conditions
+	PC = 0x200;
+	memory[PC] = 0xF0;
+	memory[PC + 1] = 0x29;
+
+	V0 = 0x3;
+	keys[0x3] = 0x1;
+
+	// RUN TEST!
+	doCycle(true);
+
+	// check PC
+	if(PC != 0x202) {
+		printf("%s PC - FAIL\n", OP_NAME);
+		return false;
+	}
+
 	return true;
 }
 
 bool testFX33(){
+	char* OP_NAME = "FX33: ";
+	initMemory();
+
+	// test conditions
+	PC = 0x200;
+	memory[PC] = 0xF0;
+	memory[PC + 1] = 0x33;
+
+	V0 = 0x3;
+	keys[0x3] = 0x1;
+
+	// RUN TEST!
+	doCycle(true);
+
+	// check PC
+	if(PC != 0x202) {
+		printf("%s PC - FAIL\n", OP_NAME);
+		return false;
+	}
+
 	return true;
 }
 
 bool testFX55(){
+	char* OP_NAME = "FX55: ";
+	initMemory();
+
+	// test conditions
+	PC = 0x200;
+	memory[PC] = 0xF0;
+	memory[PC + 1] = 0x55;
+
+	V0 = 0x3;
+	keys[0x3] = 0x1;
+
+	// RUN TEST!
+	doCycle(true);
+
+	// check PC
+	if(PC != 0x202) {
+		printf("%s PC - FAIL\n", OP_NAME);
+		return false;
+	}
+
 	return true;
 }
 
 bool testFX65(){
+	char* OP_NAME = "FX65: ";
+	initMemory();
+
+	// test conditions
+	PC = 0x200;
+	memory[PC] = 0xF0;
+	memory[PC + 1] = 0x65;
+
+	V0 = 0x3;
+	keys[0x3] = 0x1;
+
+	// RUN TEST!
+	doCycle(true);
+
+	// check PC
+	if(PC != 0x202) {
+		printf("%s PC - FAIL\n", OP_NAME);
+		return false;
+	}
+
 	return true;
 }
