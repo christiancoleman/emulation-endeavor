@@ -15,7 +15,8 @@ unsigned int SP; // stack pointer
 
 unsigned short I; 	// index register
 
-unsigned char key; 	// which key is pressed
+unsigned char key;
+unsigned char *keys; // which key is pressed
 
 unsigned char DT; 	// delay timer
 unsigned char ST; 	// sound timer
@@ -58,6 +59,7 @@ void initMemory(){
 	I = 0x0000;
 
 	key = 0x00;
+	keys = calloc( ( 16 + 1 ), sizeof(unsigned char) );
 
 	DT = 0x3C; 	// might want to set these to 60 or 0x3C
 	ST = 0x3C;

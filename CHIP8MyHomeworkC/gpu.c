@@ -94,10 +94,6 @@ bool initSDL(){
 		success = false;
 	}
 	else {
-		if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" ) );{
-			printf("Warning: Linear texture filtering not enabled!\n");
-		}
-
 		// Create window
 		window = SDL_CreateWindow("CHIP8MyHomework",
 			SDL_WINDOWPOS_UNDEFINED,

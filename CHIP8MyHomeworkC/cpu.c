@@ -9,13 +9,12 @@
 
 #pragma once
 
+#include <time.h>
 #include "memory.c"
 #include "gpu.c"
 
-#define IS_DEBUG true
-
 unsigned short getOpcode(int);
-void doCycle();
+void doCycle(bool);
 unsigned short removeBase(unsigned short, unsigned short);
 void pushAddressToStack();
 void popAddressFromStack();
@@ -37,15 +36,14 @@ unsigned short getOpcode(int index){
 	return result;					// return 0xA2B4
 }
 
-void doCycle(){
+void doCycle(bool IS_RUNNING_TESTS){
 	unsigned short opcode = getOpcode(PC);
 
-	// DEBUG
-	#if IS_DEBUG
-	printf("#################################################\n");
-	DEBUG_printMemory();
-	printf("\nPC: \t\t%x\n", PC);
-	#endif
+	if(IS_RUNNING_TESTS){
+		printf("#################################################\n");
+		DEBUG_printMemory();
+		printf("\nPC: \t\t%x\n", PC);
+	}
 
 	// Special zero case #1
 	// Clears the screen.
@@ -403,7 +401,13 @@ void doCycle(){
 		unsigned char lowNibbleOnFirstByte = getLowNibble(getFirstByte(opcodeClean));
 		unsigned char *VXdynamicRegister = getRegister(lowNibbleOnFirstByte);
 
-		*VXdynamicRegister = rand() & lastByte;
+		if(IS_RUNNING_TESTS){
+			*VXdynamicRegister = 0x7 & lastByte; // hardcoding for tests
+		} else {
+			srand(time(0));
+			unsigned char randomChar = rand() % 255;
+			*VXdynamicRegister = randomChar & lastByte;
+		}
 
 		nextInstruction();
 	}
@@ -437,7 +441,7 @@ void doCycle(){
 		printf("VX = %x", *VXdynamicRegister);
 		printf("VY = %x", *VYdynamicRegister);
 
-		//draw(memory[*VXdynamicRegister], memory[*VYdynamicRegister], lowNibbleOnSecondByte);
+		draw(memory[*VXdynamicRegister], memory[*VYdynamicRegister], lowNibbleOnSecondByte);
 
 		nextInstruction();
 	}
@@ -605,10 +609,10 @@ void doCycle(){
 		instructionNotFound(opcode);
 	}
 
-	#if IS_DEBUG
-	DEBUG_printStack();
-	DEBUG_printState(opcode);
-	#endif
+	if(IS_RUNNING_TESTS){
+		DEBUG_printStack();
+		DEBUG_printState(opcode);
+	}
 
 	// Update timers
 	// Update timers

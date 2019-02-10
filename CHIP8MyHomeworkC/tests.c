@@ -33,9 +33,16 @@ bool test8XY7_WithCarry();
 bool test8XY7_NOCarry();
 bool test8XYE_Store0inVX();
 bool test8XYE_Store1inVX();
+bool test9XY0_VX_DNE_VY_SKIP();
+bool test9XY0_VX_EQUALS_VY_NOSKIP();
+bool testANNN();
+bool testBNNN();
+bool testCNNN();
+bool testDNNN();
 
 bool testOpcodes(){
-	return test00E0()
+	return
+	   test00E0()
 	&& test00EE()
 	&& test0NNN()
 	&& test1NNN()
@@ -62,6 +69,12 @@ bool testOpcodes(){
 	&& test8XY7_NOCarry()
 	&& test8XYE_Store0inVX()
 	&& test8XYE_Store1inVX()
+	&& test9XY0_VX_DNE_VY_SKIP()
+	&& test9XY0_VX_EQUALS_VY_NOSKIP()
+	&& testANNN()
+	&& testBNNN()
+	&& testCNNN()
+	&& testDNNN()
 	;
 }
 
@@ -75,7 +88,7 @@ bool test00E0(){
 	memory[PC + 1] = 0xE0;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// TODO!!!!!
 	// CLEAR SCREEN CHECK
@@ -110,7 +123,7 @@ bool test00EE(){
 	SP = 3;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x224) {
@@ -147,7 +160,7 @@ bool test0NNN(){
 	memory[PC + 1] = 0x21;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x321) {
@@ -174,7 +187,7 @@ bool test1NNN(){
 	memory[PC + 1] = 0x73;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x273) {
@@ -195,7 +208,7 @@ bool test2NNN(){
 	memory[PC + 1] = 0x00;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x900) {
@@ -222,7 +235,7 @@ bool test3XNN_Vx_DNE_NN_NOSKIP(){
 	memory[PC + 1] = 0x66;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x202) {
@@ -244,7 +257,7 @@ bool test3XNN_Vx_EQUALS_NN_SKIP(){
 	V9 = 0x66;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x204) {
@@ -264,7 +277,7 @@ bool test4XNN_Vx_DNE_NN_SKIP(){
 	memory[PC + 1] = 0x66;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x204) {
@@ -286,7 +299,7 @@ bool test4XNN_Vx_EQUALS_NN_NOSKIP(){
 	V9 = 0x66;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x202) {
@@ -309,7 +322,7 @@ bool test5XY0_VX_EQUALS_VY_SKIP(){
 	V9 = 0x66;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x204) {
@@ -332,7 +345,7 @@ bool test5XY0_VX_DNE_VY_NOSKIP(){
 	V9 = 0x66;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x202) {
@@ -352,7 +365,7 @@ bool test6XNN(){
 	memory[PC + 1] = 0x77;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x202) {
@@ -380,7 +393,7 @@ bool test7XNN(){
 	V9 = 0x1;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x202) {
@@ -409,7 +422,7 @@ bool test8XY0(){
 	V7 = 0x33;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x202) {
@@ -438,7 +451,7 @@ bool test8XY1(){
 	V7 = 0x33;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x202) {
@@ -467,7 +480,7 @@ bool test8XY2(){
 	V7 = 0x33;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x202) {
@@ -497,7 +510,7 @@ bool test8XY3(){
 	V7 = 0x33;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x202) {
@@ -526,7 +539,7 @@ bool test8XY4_WithCarry(){
 	V7 = 0xFF;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x202) {
@@ -561,7 +574,7 @@ bool test8XY4_NOCarry(){
 	V7 = 0x33;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x202) {
@@ -596,7 +609,7 @@ bool test8XY5_WithCarry(){
 	V7 = 0xFF;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x202) {
@@ -631,7 +644,7 @@ bool test8XY5_NOCarry(){
 	V7 = 0x6;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x202) {
@@ -665,7 +678,7 @@ bool test8XY6_SetVF(){
 	V9 = 0x3F;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x202) {
@@ -699,7 +712,7 @@ bool test8XY6_NOSetVF(){
 	V9 = 0x2A;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x202) {
@@ -734,7 +747,7 @@ bool test8XY7_WithCarry(){
 	V7 = 0x7;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x202) {
@@ -769,7 +782,7 @@ bool test8XY7_NOCarry(){
 	V7 = 0x33;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x202) {
@@ -803,7 +816,7 @@ bool test8XYE_Store0inVX(){
 	V9 = 0xFE;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x202) {
@@ -837,7 +850,7 @@ bool test8XYE_Store1inVX(){
 	V9 = 0x7;
 
 	// RUN TEST!
-	doCycle();
+	doCycle(true);
 
 	// check PC
 	if(PC != 0x202) {
@@ -856,5 +869,171 @@ bool test8XYE_Store1inVX(){
 		printf("%s VF - FAIL\n", OP_NAME);
 		return false;
 	}
+	return true;
+}
+
+bool test9XY0_VX_DNE_VY_SKIP(){
+	char* OP_NAME = "9XY0_VX_DNE_VY_SKIP: ";
+	initMemory();
+
+	// test conditions
+	PC = 0x200;
+	memory[PC] = 0x99;
+	memory[PC + 1] = 0x00;
+
+	V9 = 0x7;
+	V0 = 0x8;
+
+	// RUN TEST!
+	doCycle(true);
+
+	// check PC
+	if(PC != 0x204) {
+		printf("%s PC - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	// check registers
+	if(V9 == V0){
+		printf("%s REGISTERS - FAIL\n", OP_NAME);
+		return false;
+	}
+	return true;
+}
+
+bool test9XY0_VX_EQUALS_VY_NOSKIP(){
+	char* OP_NAME = "9XY0_VX_EQUALS_VY_NOSKIP: ";
+	initMemory();
+
+	// test conditions
+	PC = 0x200;
+	memory[PC] = 0x99;
+	memory[PC + 1] = 0x00;
+
+	V9 = 0x7;
+	V0 = 0x7;
+
+	// RUN TEST!
+	doCycle(true);
+
+	// check PC
+	if(PC != 0x202) {
+		printf("%s PC - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	// check registers
+	if(V9 != V0){
+		printf("%s REGISTERS - FAIL\n", OP_NAME);
+		return false;
+	}
+	return true;
+}
+
+bool testANNN(){
+	char* OP_NAME = "ANNN: ";
+	initMemory();
+
+	// test conditions
+	PC = 0x200;
+	memory[PC] = 0xA9;
+	memory[PC + 1] = 0x01;
+
+	// RUN TEST!
+	doCycle(true);
+
+	// check PC
+	if(PC != 0x202) {
+		printf("%s PC - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	// check I
+	if(I != 0x901){
+		printf("%s I - FAIL\n", OP_NAME);
+		return false;
+	}
+	return true;
+}
+
+bool testBNNN(){
+	char* OP_NAME = "BNNN: ";
+	initMemory();
+
+	// test conditions
+	PC = 0x200;
+	memory[PC] = 0xB9;
+	memory[PC + 1] = 0x01;
+
+	V0 = 0x3;
+
+	// RUN TEST!
+	doCycle(true);
+
+	// check PC
+	if(PC != 0x904) {
+		printf("%s PC - FAIL\n", OP_NAME);
+		return false;
+	}
+	return true;
+}
+
+// uses rand() so need a special case in main code
+bool testCNNN(){
+	char* OP_NAME = "CNNN: ";
+	initMemory();
+
+	// test conditions
+	PC = 0x200;
+	memory[PC] = 0xC9;
+	memory[PC + 1] = 0x99;
+
+	V9 = 0x23; // arbitrary, we just want to be sure it changes later
+
+	// RUN TEST!
+	doCycle(true);
+
+	// check PC
+	if(PC != 0x202) {
+		printf("%s PC - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	// check registers
+	if(V9 != 0x1){
+		printf("%s REGISTERS - FAIL\n", OP_NAME);
+		return false;
+	}
+	return true;
+}
+
+bool testDNNN(){
+	char* OP_NAME = "DNNN: ";
+	initMemory();
+
+	// test conditions
+	PC = 0x200;
+	memory[PC] = 0x00;
+	memory[PC + 1] = 0xE0;
+
+	// RUN TEST!
+	doCycle(true);
+
+	// TODO!!!!!
+	// CLEAR SCREEN CHECK
+	// Make sure gfx array is all 0s?
+
+	// check PC
+	if(PC != 0x202) {
+		printf("%s PC - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	// check stack
+	if(stack[0] != 0x0){
+		printf("%s Stack - FAIL\n", OP_NAME);
+		return false;
+	}
+
 	return true;
 }
