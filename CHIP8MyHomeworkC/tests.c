@@ -39,6 +39,19 @@ bool testANNN();
 bool testBNNN();
 bool testCNNN();
 bool testDNNN();
+bool testEX9E_Key_EQUALS_VX_SKIP();
+bool testEX9E_Key_DNE_VX_NOSKIP();
+bool testEXA1_Key_DNE_VX_SKIP();
+bool testEXA1_Key_EQUALS_VX_NOSKIP();
+bool testFX07();
+bool testFX0A();
+bool testFX15();
+bool testFX18();
+bool testFX1E();
+bool testFX29();
+bool testFX33();
+bool testFX55();
+bool testFX65();
 
 bool testOpcodes(){
 	return
@@ -75,6 +88,19 @@ bool testOpcodes(){
 	&& testBNNN()
 	&& testCNNN()
 	&& testDNNN()
+	&& testEX9E_Key_EQUALS_VX_SKIP()
+	&& testEX9E_Key_DNE_VX_NOSKIP()
+	&& testEXA1_Key_DNE_VX_SKIP()
+	&& testEXA1_Key_EQUALS_VX_NOSKIP()
+	&& testFX07()
+	&& testFX0A()
+	&& testFX15()
+	&& testFX18()
+	&& testFX1E()
+	&& testFX29()
+	&& testFX33()
+	&& testFX55()
+	&& testFX65()
 	;
 }
 
@@ -1030,15 +1056,14 @@ bool testDNNN(){
 
 	// test conditions
 	PC = 0x200;
-	memory[PC] = 0x00;
+	memory[PC] = 0xD0;
 	memory[PC + 1] = 0xE0;
 
 	// RUN TEST!
 	doCycle(true);
 
 	// TODO!!!!!
-	// CLEAR SCREEN CHECK
-	// Make sure newFrame array is all 0s?
+
 
 	// check PC
 	if(PC != 0x202) {
@@ -1046,11 +1071,137 @@ bool testDNNN(){
 		return false;
 	}
 
-	// check stack
-	if(stack[0] != 0x0){
-		printf("%s Stack - FAIL\n", OP_NAME);
+	return true;
+}
+
+bool testEX9E_Key_EQUALS_VX_SKIP(){
+	char* OP_NAME = "EX9E_Key_EQUALS_VX_SKIP: ";
+	initMemory();
+
+	// test conditions
+	PC = 0x200;
+	memory[PC] = 0xE0;
+	memory[PC + 1] = 0x9E;
+
+	V0 = 0x3;
+	keys[0x3] = 0x1;
+
+	// RUN TEST!
+	doCycle(true);
+
+	// check PC
+	if(PC != 0x204) {
+		printf("%s PC - FAIL\n", OP_NAME);
 		return false;
 	}
 
+	return true;
+}
+
+bool testEX9E_Key_DNE_VX_NOSKIP(){
+	char* OP_NAME = "EX9E_Key_DNE_VX_NOSKIP: ";
+	initMemory();
+
+	// test conditions
+	PC = 0x200;
+	memory[PC] = 0xE0;
+	memory[PC + 1] = 0x9E;
+
+	V0 = 0x3;
+	// no keys pressed
+
+	// RUN TEST!
+	doCycle(true);
+
+	// check PC
+	if(PC != 0x202) {
+		printf("%s PC - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	return true;
+}
+
+bool testEXA1_Key_DNE_VX_SKIP(){
+	char* OP_NAME = "EXA1_Key_DNE_VX_SKIP: ";
+	initMemory();
+
+	// test conditions
+	PC = 0x200;
+	memory[PC] = 0xE0;
+	memory[PC + 1] = 0xA1;
+
+	V0 = 0x3;
+	// no keys pressed
+
+	// RUN TEST!
+	doCycle(true);
+
+	// check PC
+	if(PC != 0x204) {
+		printf("%s PC - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	return true;
+}
+
+bool testEXA1_Key_EQUALS_VX_NOSKIP(){
+	char* OP_NAME = "EXA1_Key_EQUALS_VX_NOSKIP: ";
+	initMemory();
+
+	// test conditions
+	PC = 0x200;
+	memory[PC] = 0xE0;
+	memory[PC + 1] = 0xA1;
+
+	V0 = 0x3;
+	keys[0x3] = 0x1;
+
+	// RUN TEST!
+	doCycle(true);
+
+	// check PC
+	if(PC != 0x202) {
+		printf("%s PC - FAIL\n", OP_NAME);
+		return false;
+	}
+
+	return true;
+}
+
+bool testFX07(){
+	return true;
+}
+
+bool testFX0A(){
+	return true;
+}
+
+bool testFX15(){
+	return true;
+}
+
+bool testFX18(){
+	return true;
+}
+
+bool testFX1E(){
+	return true;
+}
+
+bool testFX29(){
+	return true;
+}
+
+bool testFX33(){
+	return true;
+}
+
+bool testFX55(){
+	return true;
+}
+
+bool testFX65(){
 	return true;
 }

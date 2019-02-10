@@ -15,8 +15,9 @@ unsigned int SP; // stack pointer
 
 unsigned short I; 	// index register
 
-unsigned char key;
-unsigned char *keys; // which key is pressed
+// which key is pressed
+// using size of 17 because we're ignoring the 0 slot
+unsigned char keys[17] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 unsigned char DT; 	// delay timer
 unsigned char ST; 	// sound timer
@@ -59,8 +60,10 @@ void initMemory(){
 
 	I = 0x0000;
 
-	key = 0x00;
-	keys = calloc( ( 16 + 1 ), sizeof(unsigned char) );
+	// reset key array to zero => mostly for tests and between initmemory() calls
+	for(int i = 0; i < 16; i++){
+		keys[i] = 0x0;
+	}
 
 	DT = 0x3C; 	// might want to set these to 60 or 0x3C
 	ST = 0x3C;
@@ -187,7 +190,10 @@ void DEBUG_printState(unsigned short opcode){
 	printf("\n");
 	printf("I: \t\t%x\n", I);
 	printf("\n");
-	printf("key: \t\t%x\n", key);
+	printf("Keys: ");
+	for(int i = 0; i < 16; i++){
+		printf("keys[%x] = %x; ", i, keys[i]);
+	}
 	printf("\n");
 	printf("DT: \t\t%x\n", DT);
 	printf("ST: \t\t%x\n", ST);

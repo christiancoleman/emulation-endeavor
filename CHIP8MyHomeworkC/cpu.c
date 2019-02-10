@@ -333,6 +333,7 @@ void doCycle(bool IS_RUNNING_TESTS){
 
 			default:
 				instructionNotFound(opcode);
+				return;
 		}
 
 		nextInstruction();
@@ -456,6 +457,10 @@ void doCycle(bool IS_RUNNING_TESTS){
 
 		unsigned char pixelCheck = 0x0;
 
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// TODO: COME BACK TO THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 		// add new sprites to new frame
 		for(int i = 0; i < height; i++){
 
@@ -498,8 +503,10 @@ void doCycle(bool IS_RUNNING_TESTS){
 			// template: 0xEX9E
 			// if(key()==Vx)
 			case 0x9E:
-				if(key == *VXdynamicRegister){
+				if(keys[*VXdynamicRegister] == 0x1){
 					skipNextInstruction();
+				} else {
+					nextInstruction();
 				}
 				break;
 
@@ -509,14 +516,16 @@ void doCycle(bool IS_RUNNING_TESTS){
 			// template: EXA1
 			// if(key()!=Vx)
 			case 0xA1:
-				if(key != *VXdynamicRegister){
+				if(keys[*VXdynamicRegister] != 0x1){
 					skipNextInstruction();
+				} else{
+					nextInstruction();
 				}
 				break;
 
 			default:
 				instructionNotFound(opcode);
-				nextInstruction();
+				return;
 		}
 	}
 
@@ -548,7 +557,11 @@ void doCycle(bool IS_RUNNING_TESTS){
 			// template: FX0A
 			// Vx = get_key()
 			case 0x0A:
-				*VXdynamicRegister = key;
+				for(int i = 1; i < 17; i++){
+					if(keys[i] == 0x1){
+						*VXdynamicRegister = i;
+					}
+				}
 				break;
 
 			// Sets the delay timer to VX.
@@ -632,6 +645,7 @@ void doCycle(bool IS_RUNNING_TESTS){
 
 			default:
 				instructionNotFound(opcode);
+				return;
 		}
 
 		nextInstruction();
@@ -639,6 +653,7 @@ void doCycle(bool IS_RUNNING_TESTS){
 
 	else {
 		instructionNotFound(opcode);
+		return;
 	}
 
 	if(IS_RUNNING_TESTS){

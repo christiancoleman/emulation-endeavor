@@ -139,6 +139,7 @@ void closeSDL(){
 void clearScreen(){
 	for(int i = 0; i < SCREEN_WIDTH; i++){
 		for(int j = 0; j < SCREEN_HEIGHT; j++){
+			oldFrame[i][j] = 0x0;
 			newFrame[i][j] = 0x0;
 		}
 	}
