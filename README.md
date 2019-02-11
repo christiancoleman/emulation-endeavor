@@ -7,7 +7,7 @@ I used C and SDL.
 
 **TODO**: Give sources
 
-[alt text](https://github.com/christiancoleman/emulation-endeavor/blob/master/CHIP8MyHomeworkC/readme/chip-8-example.png "Space Invaders on my CHIP-8 emulator")
+![alt text](https://github.com/christiancoleman/emulation-endeavor/blob/master/CHIP8MyHomeworkC/readme/chip-8-example.png "Space Invaders on my CHIP-8 emulator")
 
 # Chip8MyHomeworkCpp
 This was going to be the same as Chip8MyHomework but implemented in C++. I may come back to this but right now this is just a shell/sandbox for me to toy around with the idea. If you see commits there then I've started to implement it more and more. It would be nice to have a more structured and OOP version of the C version.
