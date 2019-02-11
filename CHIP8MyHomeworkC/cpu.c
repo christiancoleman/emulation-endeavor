@@ -441,11 +441,11 @@ void doCycle(bool IS_RUNNING_TESTS){
 		unsigned char *VYdynamicRegister = getRegister(highNibbleOnSecondByte);
 
 		// store backup of old frame
-		for(int i = 0; i < SCREEN_WIDTH; i++){
+		/*for(int i = 0; i < SCREEN_WIDTH; i++){
 			for(int j = 0; j < SCREEN_HEIGHT; j++){
 				oldFrame[i][j] = newFrame[i][j];
 			}
-		}
+		}*/
 
 		// for prettier reading code
 		unsigned char height = lowNibbleOnSecondByte;

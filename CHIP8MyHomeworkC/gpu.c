@@ -54,7 +54,7 @@ SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 
 // The texture
-/*SDL_Texture* texture = NULL;*/
+SDL_Texture* texture = NULL;
 
 //////////////////////////////////////
 // declarations
@@ -121,7 +121,7 @@ bool initSDL(){
 				success = false;
 			}
 			else {
-				/*texture = SDL_CreateTexture(
+				texture = SDL_CreateTexture(
 					renderer,
 					SDL_PIXELFORMAT_ARGB8888,
 					SDL_TEXTUREACCESS_STATIC,
@@ -130,7 +130,7 @@ bool initSDL(){
 				);
 				if(texture == NULL){
 					printf("Texture could not be created! SDL_Error: %s\n", SDL_GetError());
-				}*/
+				}
 			}
 		}
 	}
@@ -145,8 +145,8 @@ void closeSDL(){
 	SDL_DestroyRenderer(renderer);
 	renderer = NULL;
 
-	/*SDL_DestroyTexture(texture);
-	texture = NULL;*/
+	SDL_DestroyTexture(texture);
+	texture = NULL;
 
 	SDL_Quit();
 }
@@ -158,10 +158,12 @@ void clearScreen(){
 			newFrame[i][j] = 0x0;
 		}
 	}
-
 }
 
 void draw(){
+
+	SDL_SetRenderDrawColor( renderer, 0x00, 0x00, 0x00, 0x00 );
+	SDL_RenderClear(renderer);
 
 	SDL_Rect rect;
 
@@ -172,7 +174,7 @@ void draw(){
 
 	for(int i = 0; i < SCREEN_WIDTH; i++){
 		for(int j = 0; j < SCREEN_HEIGHT; j++){
-			if(oldFrame[i][j] ^ newFrame[i][j] == 1){
+			if(newFrame[i][j] ^ oldFrame[i][j] == 1){
 				rect.x = i * SCALE;
 				rect.y = j * SCALE;
 				rect.w = SCALE;
