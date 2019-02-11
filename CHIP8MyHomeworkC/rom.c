@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-char * ROM_NAME = "_INVADERS";
+char * ROM_NAME = "_TETRIS";
 
 void loadRom();
 int getSizeOfFile(FILE*);

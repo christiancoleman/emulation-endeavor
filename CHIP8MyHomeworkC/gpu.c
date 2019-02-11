@@ -53,6 +53,9 @@ SDL_Window* window = NULL;
 // The window renderer
 SDL_Renderer* renderer = NULL;
 
+// The texture
+/*SDL_Texture* texture = NULL;*/
+
 //////////////////////////////////////
 // declarations
 //////////////////////////////////////
@@ -103,7 +106,7 @@ bool initSDL(){
 			SDL_WINDOWPOS_UNDEFINED,
 			(SCREEN_WIDTH * SCALE),
 			(SCREEN_HEIGHT * SCALE),
-			SDL_WINDOW_SHOWN
+			SDL_WINDOW_OPENGL
 		);
 
 		if( window == NULL ){
@@ -118,7 +121,16 @@ bool initSDL(){
 				success = false;
 			}
 			else {
-				// NOTHING
+				/*texture = SDL_CreateTexture(
+					renderer,
+					SDL_PIXELFORMAT_ARGB8888,
+					SDL_TEXTUREACCESS_STATIC,
+					SCREEN_WIDTH,
+					SCREEN_HEIGHT
+				);
+				if(texture == NULL){
+					printf("Texture could not be created! SDL_Error: %s\n", SDL_GetError());
+				}*/
 			}
 		}
 	}
@@ -127,24 +139,30 @@ bool initSDL(){
 }
 
 void closeSDL(){
-	// Destroy window
 	SDL_DestroyWindow(window);
 	window = NULL;
 
-	// Quit SDL subsystems
+	SDL_DestroyRenderer(renderer);
+	renderer = NULL;
+
+	/*SDL_DestroyTexture(texture);
+	texture = NULL;*/
+
 	SDL_Quit();
 }
 
 void clearScreen(){
 	for(int i = 0; i < SCREEN_WIDTH; i++){
 		for(int j = 0; j < SCREEN_HEIGHT; j++){
-			oldFrame[i][j] = 0x0;
+			//oldFrame[i][j] = 0x0;
 			newFrame[i][j] = 0x0;
 		}
 	}
+
 }
 
 void draw(){
+
 	SDL_Rect rect;
 
 	rect.x = 0;
